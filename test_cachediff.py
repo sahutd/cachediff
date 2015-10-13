@@ -7,3 +7,6 @@ class TestFile(unittest.TestCase):
 
 class TestLineDetection(unittest.TestCase):
     pass
+
+if __name__ == '__main__':
+    unittest.main()
