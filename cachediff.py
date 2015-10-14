@@ -1,10 +1,16 @@
-class AssemblyInstruction:
+class AssemblyLine:
     '''
     An abstract representation of an assembly instruction
     '''
-    def __init__(self, address):
+    def __init__(self, assembly_line):
         '''
-        Address - virtual address of instruction
+        assembly_line - a line in an assembly instruction
+        '''
+        pass
+
+    def get_virtual_address(self):
+        '''
+        return virtual address corresponding to line
         '''
         pass
 
