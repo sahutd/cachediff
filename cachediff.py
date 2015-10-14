@@ -64,3 +64,9 @@ class File:
         return - number of high level lines
         '''
         pass
+
+    def get_line(self, virtual_address):
+        '''
+        return HighLine object coressponding to virtual_address
+        '''
+        pass
