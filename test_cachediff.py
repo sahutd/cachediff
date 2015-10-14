@@ -27,6 +27,10 @@ class TestHighLine(unittest.TestCase):
         self.assertEqual(self.hl.get_virtual_addresses(),
                          expected)
 
+    def test_has_virtual_address(self):
+        self.assertTrue(self.hl.has_virtual_address(0x40051a))
+        self.assertFalse(self.hl.has_virtual_address(0x30051a))
+
 
 if __name__ == '__main__':
     unittest.main()
