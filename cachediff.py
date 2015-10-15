@@ -6,13 +6,13 @@ class AssemblyLine:
         '''
         assembly_line - a line in an assembly instruction
         '''
-        pass
+        self.assembly_line = '0x' + assembly_line.split()[0][:-1]
 
     def get_virtual_address(self):
         '''
         return virtual address corresponding to line
         '''
-        pass
+        return int(self.assembly_line, 16)
 
 
 class HighLine:
@@ -25,13 +25,18 @@ class HighLine:
         assembly_instructions - list of assembly instruction
                                corresponding to line
         '''
-        pass
+        self.lineno = lineno
+        self.assembly_instructions = []
+        assembly_instructions = [i.strip() for i in assembly_instructions.split('\n') if i.strip()]
+        for i in assembly_instructions:
+            temp = AssemblyLine(i)
+            self.assembly_instructions.append(temp.get_virtual_address())
 
     def get_virtual_addresses(self):
         '''
         return set containing all virtual addresses for instruction
         '''
-        pass
+        return set([i for i in self.assembly_instructions])
 
     def has_virtual_address(self, address):
         '''
@@ -39,7 +44,7 @@ class HighLine:
         return - bool true if address corresponds to an
                  assembly instruction for this instruction
         '''
-        pass
+        return hex(address) in self.assembly_instructions
 
 
 class File:
@@ -50,7 +55,7 @@ class File:
         '''
         filename - absolute path to file
         '''
-        pass
+        self.filename = filename
 
     def get_high_level_lines(self):
         '''
