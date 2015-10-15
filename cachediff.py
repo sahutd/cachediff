@@ -6,13 +6,13 @@ class AssemblyLine:
         '''
         assembly_line - a line in an assembly instruction
         '''
-        self.assembly_line = '0x'+assembly_line[0:6]
+        self.assembly_line = '0x' + assembly_line.split()[0][:-1]
 
     def get_virtual_address(self):
         '''
         return virtual address corresponding to line
         '''
-        return int(self.assembly_line,16)
+        return int(self.assembly_line, 16)
 
 
 class HighLine:
@@ -27,15 +27,16 @@ class HighLine:
         '''
         self.lineno = lineno
         self.assembly_instructions = []
-        for instr in assembly_instructions.split('\n'):
-            if len(instr) >7 and instr.strip()[0:6].isalnum():
-                self.assembly_instructions.append('0x'+instr.strip()[0:6])
+        assembly_instructions = [i.strip() for i in assembly_instructions.split('\n') if i.strip()]
+        for i in assembly_instructions:
+            temp = AssemblyLine(i)
+            self.assembly_instructions.append(temp.get_virtual_address())
 
     def get_virtual_addresses(self):
         '''
         return set containing all virtual addresses for instruction
         '''
-        return set([int(i,16) for i in self.assembly_instructions])
+        return set([i for i in self.assembly_instructions])
 
     def has_virtual_address(self, address):
         '''
