@@ -59,8 +59,10 @@ class File:
 
     def get_high_level_lines(self):
         '''
-        @return Line objects corresponding to each high level
+        @return list of Line objects corresponding to each high level
         line in file
+        the list is sorted by HigherLevel file line number
+        in ascending order
         '''
         pass
 

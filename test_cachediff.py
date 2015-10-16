@@ -1,4 +1,5 @@
 import unittest
+import os
 import cachediff
 
 
@@ -31,6 +32,31 @@ class TestHighLine(unittest.TestCase):
         pass
         # self.assertTrue(self.hl.has_virtual_address(0x40051a))
         # self.assertFalse(self.hl.has_virtual_address(0x30051a))
+
+
+class TestFile(unittest.TestCase):
+    def setUp(self):
+        file_path = os.path.join(os.getcwd(), 'test_file.c')
+        self.f = cachediff.File(file_path)
+
+    def test_get_high_level_lines(self):
+        temp = self.f.get_high_level_lines()
+        self.assertEqual(len(temp), self.f.get_line_count())
+        # temp[0] corresponds to line3
+        self.assertTrue(temp[0].has_virtual_address(0x400506))
+
+    def test_get_line_count(self):
+        self.assertEqual(self.f.get_line_count(), 5)  # see test_file_dump.dump
+
+    def test_get_line(self):
+        hl = self.f.get_line(0x400506)
+        self.assertEqual(hl.lineno, 3)
+        hl = self.f.get_line(0x400563)
+        self.assertEqual(hl.lineno, 8)
+        with self.assertRaises(ValueError):
+            hl = self.f.get_line(0x400580)
+        with self.assertRaises(ValueError):
+            hl = self.f.get_line(0x123456)
 
 
 if __name__ == '__main__':
