@@ -47,6 +47,39 @@ class HighLine:
         return address in self.assembly_instructions
 
 
+def init_file(path):
+    '''
+    @return a sorted list of HighLine objects from the given filename
+    NOTE : the logic can be made simpler using proper REGEX
+    '''
+    import re
+    f = open('test_file_dump.dump','r')
+    x = f.readlines()
+    f.close()
+    p = re.compile(path+'.*(?! )')
+    is_read = False
+    instr = dict()
+    line_no = 0
+    for line in x:
+        if is_read and line == '\n':
+            break
+        tmp = re.findall(path+':(\d+)',line)
+        if tmp:
+            is_read = True
+            line_no = tmp[0]
+            if line_no not in instr.keys():
+                instr[line_no] = []
+        elif is_read:
+            inst = re.findall('.*',line)
+            if inst:
+                instr[line_no].append(inst[0])
+
+    list_ = []
+    for i,j in instr.items():
+        list_.append(HighLine(int(i),'\n'.join(j)))
+    list_.sort(key=lambda x : x.lineno)
+    return list_
+
 class File:
     '''
     An abstract representation of a C/C++ file.
@@ -56,6 +89,7 @@ class File:
         filename - absolute path to file
         '''
         self.filename = filename
+        self.lines = init_file(filename)
 
     def get_high_level_lines(self):
         '''
@@ -64,16 +98,20 @@ class File:
         the list is sorted by HigherLevel file line number
         in ascending order
         '''
-        pass
+        return self.lines
 
     def get_line_count(self):
         '''
         return - number of high level lines
         '''
-        pass
+        return len(self.lines)
 
     def get_line(self, virtual_address):
         '''
         return HighLine object coressponding to virtual_address
         '''
-        pass
+        for obj in self.lines:
+            if  virtual_address in obj.assembly_instructions:
+                return obj
+
+        raise ValueError
