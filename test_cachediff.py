@@ -29,9 +29,8 @@ class TestHighLine(unittest.TestCase):
                          expected)
 
     def test_has_virtual_address(self):
-        pass
-        # self.assertTrue(self.hl.has_virtual_address(0x40051a))
-        # self.assertFalse(self.hl.has_virtual_address(0x30051a))
+        self.assertTrue(self.hl.has_virtual_address(0x40051a))
+        self.assertFalse(self.hl.has_virtual_address(0x30051a))
 
 
 class TestFile(unittest.TestCase):
@@ -42,7 +41,7 @@ class TestFile(unittest.TestCase):
     def test_get_high_level_lines(self):
         temp = self.f.get_high_level_lines()
         self.assertEqual(len(temp), self.f.get_line_count())
-        # temp[0] corresponds to line3
+        # temp[0] corresponds to line3 in test_file_dump.dump
         self.assertTrue(temp[0].has_virtual_address(0x400506))
 
     def test_get_line_count(self):

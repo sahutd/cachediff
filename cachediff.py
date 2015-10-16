@@ -44,7 +44,7 @@ class HighLine:
         return - bool true if address corresponds to an
                  assembly instruction for this instruction
         '''
-        return hex(address) in self.assembly_instructions
+        return address in self.assembly_instructions
 
 
 class File:
