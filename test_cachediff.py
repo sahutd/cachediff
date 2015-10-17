@@ -35,8 +35,7 @@ class TestHighLine(unittest.TestCase):
 
 class TestFile(unittest.TestCase):
     def setUp(self):
-        #file_path = os.path.join(os.getcwd(), 'test_file.c') since os.getcwd get /home/sameer etc
-        file_path = '/home/saimadhav/cachediff/test_file.c'
+        file_path = os.path.join(os.getcwd(), 'test_file.c')
         self.f = cachediff.File(file_path)
 
     def test_get_high_level_lines(self):
