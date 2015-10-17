@@ -57,13 +57,14 @@ def init_file(path):
     x = f.readlines()
     f.close()
     p = re.compile(path+'.*(?! )')
+    filename = re.findall(r'/.*/(\w+\.\w+)',path)[0]
     is_read = False
     instr = dict()
     line_no = 0
     for line in x:
         if is_read and line == '\n':
             break
-        tmp = re.findall(path+':(\d+)',line)
+        tmp = re.findall('/.*/'+filename+':(\d+)',line)
         if tmp:
             is_read = True
             line_no = tmp[0]
