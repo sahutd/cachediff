@@ -53,14 +53,15 @@ def init_file(path):
     NOTE : the logic can be made simpler using proper REGEX
     '''
     import re
-    f = open('test_file_dump.dump','r')
-    x = f.readlines()
-    f.close()
     p = re.compile(path+'.*(?! )')
     filename = re.findall(r'/.*/(\w+\.\w+)',path)[0]
+    dump_file = path.split('.')[0]+'_dump.dump'
     is_read = False
     instr = dict()
     line_no = 0
+    f = open(dump_file,'r')
+    x = f.readlines()
+    f.close()
     for line in x:
         if is_read and line == '\n':
             break
