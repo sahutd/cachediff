@@ -1,3 +1,6 @@
+import re
+
+
 class AssemblyLine:
     '''
     An abstract representation of an assembly instruction
@@ -27,7 +30,9 @@ class HighLine:
         '''
         self.lineno = lineno
         self.assembly_instructions = []
-        assembly_instructions = [i.strip() for i in assembly_instructions.split('\n') if i.strip()]
+        assembly_instructions = [i.strip() for i in
+                                 assembly_instructions.split('\n')
+                                 if i.strip()]
         for i in assembly_instructions:
             temp = AssemblyLine(i)
             self.assembly_instructions.append(temp.get_virtual_address())
@@ -52,35 +57,34 @@ def init_file(path):
     @return a sorted list of HighLine objects from the given filename
     NOTE : the logic can be made simpler using proper REGEX
     '''
-    import re
-    p = re.compile(path+'.*(?! )')
-    filename = re.findall(r'/.*/(\w+\.\w+)',path)[0]
+    filename = re.findall(r'/.*/(\w+\.\w+)', path)[0]
     dump_file = path.split('.')[0]+'_dump.dump'
     is_read = False
     instr = dict()
     line_no = 0
-    f = open(dump_file,'r')
+    f = open(dump_file, 'r')
     x = f.readlines()
     f.close()
     for line in x:
         if is_read and line == '\n':
             break
-        tmp = re.findall('/.*/'+filename+':(\d+)',line)
+        tmp = re.findall('/.*/'+filename+':(\d+)', line)
         if tmp:
             is_read = True
             line_no = tmp[0]
             if line_no not in instr.keys():
                 instr[line_no] = []
         elif is_read:
-            inst = re.findall('.*',line)
+            inst = re.findall('.*', line)
             if inst:
                 instr[line_no].append(inst[0])
 
     list_ = []
-    for i,j in instr.items():
-        list_.append(HighLine(int(i),'\n'.join(j)))
-    list_.sort(key=lambda x : x.lineno)
+    for i, j in instr.items():
+        list_.append(HighLine(int(i), '\n'.join(j)))
+    list_.sort(key=lambda x: x.lineno)
     return list_
+
 
 class File:
     '''
@@ -113,7 +117,7 @@ class File:
         return HighLine object coressponding to virtual_address
         '''
         for obj in self.lines:
-            if  virtual_address in obj.assembly_instructions:
+            if virtual_address in obj.assembly_instructions:
                 return obj
 
         raise ValueError
