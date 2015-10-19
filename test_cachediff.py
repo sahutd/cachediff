@@ -35,7 +35,7 @@ class TestHighLine(unittest.TestCase):
 
 class TestFile(unittest.TestCase):
     def setUp(self):
-        file_path = os.path.join(os.getcwd(), 'test_file.c')
+        file_path = os.path.join(os.getcwd(), 'test_samples/test_file.c')
         self.f = cachediff.File(file_path)
 
     def test_get_high_level_lines(self):
@@ -56,6 +56,15 @@ class TestFile(unittest.TestCase):
             hl = self.f.get_line(0x400580)
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x123456)
+
+    def test_diff_simple(self):
+        pass
+
+    def test_diff_invalid(self):
+        pass
+
+    def test_diff_empty(self):
+        pass
 
 
 if __name__ == '__main__':

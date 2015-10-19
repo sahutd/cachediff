@@ -121,3 +121,11 @@ class File:
                 return obj
 
         raise ValueError
+
+    def single_contiguous_diff(self, other):
+        '''
+        return a tuple(x, y)
+        where x is the highlines corresponds  to changed block in self
+        where y is the highlines coressponding to changed block in other
+        '''
+        pass
