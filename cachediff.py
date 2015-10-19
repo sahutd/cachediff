@@ -122,10 +122,11 @@ class File:
 
         raise ValueError
 
-    def single_contiguous_diff(self, other):
+
+def single_contiguous_diff(file1, file2):
         '''
         return a tuple(x, y)
-        where x is the highlines corresponds  to changed block in self
-        where y is the highlines coressponding to changed block in other
+        where x is the highlines coressponding  to changed blockin file1
+        where y is the highlines coressponding to changed block in file2
         '''
         pass

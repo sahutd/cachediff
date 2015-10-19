@@ -35,7 +35,8 @@ class TestHighLine(unittest.TestCase):
 
 class TestFile(unittest.TestCase):
     def setUp(self):
-        file_path = os.path.join(os.getcwd(), 'test_samples/test_file.c')
+        file_path = os.path.join(os.getcwd(), 'test_samples',
+                                 'test_file.c')
         self.f = cachediff.File(file_path)
 
     def test_get_high_level_lines(self):
@@ -57,14 +58,38 @@ class TestFile(unittest.TestCase):
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x123456)
 
+
+class TestSingleContiguousDiff(unittest.TestCase):
+    def setUp(self):
+        cwd = os.getcwd()
+        f1_path = os.path.join(cwd, 'test_samples',
+                               'test_file.c')
+        f2_path = os.path.join(cwd, 'test_samples',
+                               'test_file_one.c')
+        f3_path = os.path.join(cwd, 'test_samples',
+                               'test_file_two.c')
+        self.f1 = cachediff.File(f1_path)
+        self.f2 = cachediff.File(f2_path)
+        self.f3 = cachediff.File(f3_path)
+        self.f4 = cachediff.File(f1_path)
+        self.diff_one = cachediff.single_contiguous_diff(self.f1,
+                                                         self.f2)
+        self.diff_two = cachediff.single_contiguous_diff(self.f1,
+                                                         self.f4)
+
     def test_diff_simple(self):
-        pass
+        self.assertEqual(len(self.diff_one[0], 1))
+        self.assertEqual(len(self.diff_one[1], 1))
 
     def test_diff_invalid(self):
-        pass
+        '''
+        To test the case where there is more than one contiguous block
+        '''
+        with self.assertRaises(ValueError):
+            cachediff.single_contiguous_diff(self.f1, self.f3)
 
     def test_diff_empty(self):
-        pass
+        self.assertEqual(self.cachediff_two, ([], []))
 
 
 if __name__ == '__main__':
