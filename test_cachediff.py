@@ -37,7 +37,9 @@ class TestFile(unittest.TestCase):
     def setUp(self):
         file_path = os.path.join(os.getcwd(), 'test_samples',
                                  'test_file.c')
-        self.f = cachediff.File(file_path)
+        dumpfile = os.path.join(os.getcwd(), 'test_samples',
+                                 'test_file_dump.dump')
+        self.f = cachediff.File(file_path, dumpfile=dumpfile)
 
     def test_get_high_level_lines(self):
         temp = self.f.get_high_level_lines()
@@ -78,8 +80,8 @@ class TestSingleContiguousDiff(unittest.TestCase):
                                                          self.f4)
 
     def test_diff_simple(self):
-        self.assertEqual(len(self.diff_one[0], 1))
-        self.assertEqual(len(self.diff_one[1], 1))
+        self.assertEqual(len(self.diff_one[0]), 1)
+        self.assertEqual(len(self.diff_one[1]), 1)
 
     def test_diff_invalid(self):
         '''
@@ -89,7 +91,7 @@ class TestSingleContiguousDiff(unittest.TestCase):
             cachediff.single_contiguous_diff(self.f1, self.f3)
 
     def test_diff_empty(self):
-        self.assertEqual(self.cachediff_two, ([], []))
+        self.assertEqual(self.diff_two, ([], []))
 
 
 if __name__ == '__main__':
