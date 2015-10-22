@@ -70,18 +70,29 @@ class TestSingleContiguousDiff(unittest.TestCase):
                                'test_file_one.c')
         f3_path = os.path.join(cwd, 'test_samples',
                                'test_file_two.c')
+        f5_path = os.path.join(cwd, 'test_samples',
+                               'test_file_three.c')
         self.f1 = cachediff.File(f1_path)
         self.f2 = cachediff.File(f2_path)
         self.f3 = cachediff.File(f3_path)
         self.f4 = cachediff.File(f1_path)
+        self.f5 = cachediff.File(f5_path)
         self.diff_one = cachediff.single_contiguous_diff(self.f1,
                                                          self.f2)
         self.diff_two = cachediff.single_contiguous_diff(self.f1,
                                                          self.f4)
+        self.diff_three = cachediff.single_contiguous_diff(self.f3,
+                                                           self.f5)
 
     def test_diff_simple(self):
         self.assertEqual(len(self.diff_one[0]), 1)
         self.assertEqual(len(self.diff_one[1]), 1)
+        self.assertEqual(self.diff_one[0][0].lineno, 10)
+        self.assertEqual(self.diff_one[1][0].lineno, 10)
+
+        self.assertEqual(len(self.diff_three[0]), 1)
+        self.assertEqual(len(self.diff_three[1]), 3)
+        self.assertEqual(self.diff_three[1][1].lineno, 5)
 
     def test_diff_invalid(self):
         '''
