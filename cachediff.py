@@ -1,4 +1,5 @@
 import sys
+import os
 import re
 import subprocess
 import tempfile
@@ -105,10 +106,12 @@ class File:
         return list_
 
     def create_dumpfile(self):
-        obj = subprocess.Popen(['gcc', '-g', self.filename])
+        self.executable = '{}.out'.format(self.filename)
+        obj = subprocess.Popen(['gcc', '-g', self.filename, '-o',
+                                self.executable])
         obj.wait()
         tmp = tempfile.NamedTemporaryFile(delete=False)
-        obj = subprocess.Popen(['objdump', '-dl', './a.out'], stdout=tmp)
+        obj = subprocess.Popen(['objdump', '-dl', self.executable], stdout=tmp)
         obj.wait()
         self.dumpfile = tmp.name
 
@@ -152,14 +155,10 @@ class Run:
     def __init__(self, sourcefile, inputfile, diff_block):
         self.sourcefile = sourcefile
         self.inputfile = inputfile
-        self.executable = self.compile_source()
         self.trace_file = self.run()
         self.global_cache_result = self.cache_simulate('global')
         self.local_cache_simulate = self.cache_simulate('local')
         self.diff_block = diff_block
-
-    def compile_source(self):
-        pass
 
     def run(self):
         pass
@@ -263,13 +262,15 @@ def perform_analysis(run1, run2):
     return
 
 
-def process(file1, input1, file2, input2):
+def process(file1, file2, input1, input2):
     '''
     file1 and file2 are input C/C++ files
     input1 and input2 are the input stream to be fed to executables
     of file1 and file2
     return - an object of ResultDiff
     '''
+    file1 = File(file1)
+    file2 = File(file2)
     diff1, diff2 = single_contiguous_diff(file1, file2)
     run1 = Run(file1, input1, diff1)
     run2 = Run(file2, input2, diff2)
@@ -278,5 +279,7 @@ def process(file1, input1, file2, input2):
 
 
 if __name__ == '__main__':
-    file1, file2, input_ = sys.argv[1:5]
-    result = process(file1, file2, input_, )
+    file1, file2, input1, input2 = sys.argv[1:5]
+    file1 = os.path.abspath(file1)
+    file2 = os.path.abspath(file2)
+    result = process(file1, file2, input1, input2)
