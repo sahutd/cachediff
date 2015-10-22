@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 import re
 import subprocess
 import tempfile
@@ -161,7 +162,23 @@ class Run:
         self.diff_block = diff_block
 
     def run(self):
-        pass
+        try:
+            pin = os.environ['PIN']
+        except:
+            raise RuntimeError('Ensure $PIN is set')
+        pin_executable = os.path.join(pin, './pin.sh')
+        tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
+                              'obj-intel64', 'MyPinTool.so')
+        stdin = open(self.inputfile)
+        p = subprocess.Popen([pin_executable, '-t', tracer,
+                              '--',
+                              self.sourcefile.executable],
+                             stdin=stdin,
+                             stdout=tempfile.NamedTemporaryFile())
+        p.wait()
+        trace_file = tempfile.NamedTemporaryFile().name
+        shutil.move('pinatrace.out', trace_file)
+        return trace_file
 
     def cache_simulate(self, locality):
         '''
