@@ -1,3 +1,4 @@
+import sys
 import re
 import subprocess
 import tempfile
@@ -137,6 +138,42 @@ class File:
         raise ValueError
 
 
+class Result:
+    '''
+    An abstract representation of a DineroIV output
+    '''
+    pass
+
+
+class Run:
+    '''
+    Class to hold all results of a run
+    '''
+    def __init__(self, sourcefile, inputfile, diff_block):
+        self.sourcefile = sourcefile
+        self.inputfile = inputfile
+        self.executable = self.compile_source()
+        self.trace_file = self.run()
+        self.global_cache_result = self.cache_simulate('global')
+        self.local_cache_simulate = self.cache_simulate('local')
+        self.diff_block = diff_block
+
+    def compile_source(self):
+        pass
+
+    def run(self):
+        pass
+
+    def cache_simulate(self, locality):
+        '''
+        locality - 'local' or 'global'
+                   if 'local' consider only block given by self.diff_block
+                   if 'global' consider entire file
+        return Result object corresponding to cache simulator run
+        '''
+        pass
+
+
 def single_contiguous_diff(file1, file2):
     '''
     return a tuple(x, y)
@@ -217,3 +254,29 @@ def single_contiguous_diff(file1, file2):
             list_file2.append(dict_file2[lineno])
 
     return (list_file1, list_file2)
+
+
+def perform_analysis(run1, run2):
+    '''
+    Statistical Analysis between run1 and run2
+    '''
+    return
+
+
+def process(file1, input1, file2, input2):
+    '''
+    file1 and file2 are input C/C++ files
+    input1 and input2 are the input stream to be fed to executables
+    of file1 and file2
+    return - an object of ResultDiff
+    '''
+    diff1, diff2 = single_contiguous_diff(file1, file2)
+    run1 = Run(file1, input1, diff1)
+    run2 = Run(file2, input2, diff2)
+    result = perform_analysis(run1, run2)
+    return result
+
+
+if __name__ == '__main__':
+    file1, file2, input_ = sys.argv[1:5]
+    result = process(file1, file2, input_, )
