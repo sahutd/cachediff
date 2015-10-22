@@ -55,7 +55,6 @@ class HighLine:
         return address in self.assembly_instructions
 
 
-
 class File:
     '''
     An abstract representation of a C/C++ file.
@@ -105,13 +104,12 @@ class File:
         return list_
 
     def create_dumpfile(self):
-        obj = subprocess.Popen(['gcc','-g',self.filename])
+        obj = subprocess.Popen(['gcc', '-g', self.filename])
         obj.wait()
         tmp = tempfile.NamedTemporaryFile(delete=False)
-        obj = subprocess.Popen(['objdump','-dl','./a.out'],stdout = tmp)
+        obj = subprocess.Popen(['objdump', '-dl', './a.out'], stdout=tmp)
         obj.wait()
         self.dumpfile = tmp.name
-
 
     def get_high_level_lines(self):
         '''
@@ -139,45 +137,45 @@ class File:
         raise ValueError
 
 
-def get_diff_lineno(filename1, filename2):
-    '''
-    return tuple(x,y) where x and y are list containing the lineno of after diffing file1 and file2
-    '''
-    fA = open(filename1, "rt")
-    fB = open(filename2, "rt")
-    fileA = fA.readlines()
-    fileB = fB.readlines()
-    fA.close()
-    fB.close()
-
-    d = difflib.Differ()
-    diffs = d.compare(fileA, fileB)
-    lineNum_one = 0
-    lineNum_two = 0
-    list_one = []
-    list_two = []
-
-    for line in diffs:
-        code = line[:2]
-        if code in ("  ",):
-            lineNum_one += 1
-            lineNum_two += 1
-        elif code in ("- ",):
-            lineNum_one += 1
-            list_one.append(lineNum_one)
-        elif code in ("+ ",):
-            lineNum_two += 1
-            list_two.append(lineNum_two)
-
-    return (list_one,list_two)
-
 def single_contiguous_diff(file1, file2):
     '''
     return a tuple(x, y)
     where x is the highlines coressponding  to changed blockin file1
     where y is the highlines coressponding to changed block in file2
     '''
-    tmp = get_diff_lineno(file1.filename,file2.filename)
+    def get_diff_lineno(filename1, filename2):
+        '''
+        return tuple(x,y) where x and y are list containing the lineno of after
+        diffing file1 and file2
+        '''
+        fA = open(filename1, "rt")
+        fB = open(filename2, "rt")
+        fileA = fA.readlines()
+        fileB = fB.readlines()
+        fA.close()
+        fB.close()
+
+        d = difflib.Differ()
+        diffs = d.compare(fileA, fileB)
+        lineNum_one = 0
+        lineNum_two = 0
+        list_one = []
+        list_two = []
+
+        for line in diffs:
+            code = line[:2]
+            if code in ("  ",):
+                lineNum_one += 1
+                lineNum_two += 1
+            elif code in ("- ",):
+                lineNum_one += 1
+                list_one.append(lineNum_one)
+            elif code in ("+ ",):
+                lineNum_two += 1
+                list_two.append(lineNum_two)
+
+        return (list_one, list_two)
+    tmp = get_diff_lineno(file1.filename, file2.filename)
 
     # check if more than one block is changed
     if tmp[0]:
@@ -208,13 +206,13 @@ def single_contiguous_diff(file1, file2):
 
     for lineno in tmp[0]:
         if lineno not in dict_file1.keys():
-            list_file1.append(HighLine(-1,""))
+            list_file1.append(HighLine(-1, ""))
         else:
             list_file1.append(dict_file1[lineno])
 
     for lineno in tmp[1]:
         if lineno not in dict_file2.keys():
-            list_file2.append(HighLine(-2,""))
+            list_file2.append(HighLine(-2, ""))
         else:
             list_file2.append(dict_file2[lineno])
 
