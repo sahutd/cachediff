@@ -152,7 +152,7 @@ class Result:
     An abstract representation of a DineroIV output
     '''
     def __init__(self, dinero_output):
-        pass
+        self.results = {}
 
 
 class Run:

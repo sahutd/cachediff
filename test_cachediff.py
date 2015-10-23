@@ -98,7 +98,44 @@ class TestResult(unittest.TestCase):
         self.result = cachediff.Result(path)
 
     def test_simple(self):
-        pass
+        results = self.result.results
+
+        self.assertEquals(results['l1_icache_instrn_fetches'], 215903)
+        self.assertEquals(results['l1_icache_instrn_misses'], 814)
+        self.assertEquals(results['l1_icache_instrn_miss_rate'], 0.0038)
+        self.assertEquals(results['l1_icache_bytes_from_memory'], 52096)
+        self.assertEquals(results['l1_dcache_data_fetches'], 79157)
+        self.assertEquals(results['l1_dcache_read_fetches'], 55538)
+        self.assertEquals(results['l1_dcache_write_fetches'], 23619)
+        self.assertEquals(results['l1_dcache_data_misses'], 3109)
+        self.assertEquals(results['l1_dcache_read_misses'], 2548)
+        self.assertEquals(results['l1_dcache_write_misses'], 561)
+        self.assertEquals(results['l1_dcache_bytes_from_memory'], 198976)
+        self.assertEquals(results['l1_dcache_bytes_to_memory'], 42560)
+        self.assertEquals(results['l2_ucache_fetches'], 4588)
+        self.assertEquals(results['l2_ucache_instrn_fetches'], 814)
+        self.assertEquals(results['l2_ucache_data_fetches'], 3774)
+        self.assertEquals(results['l2_ucache_read_fetches'], 665)
+        self.assertEquals(results['l2_ucache_misses'], 3218)
+        self.assertEquals(results['l2_ucache_instrn_misses'], 811)
+        self.assertEquals(results['l2_ucache_data_misses'], 2407)
+        self.assertEquals(results['l2_ucache_read_misses'], 2407)
+        self.assertEquals(results['l2_ucache_write_miesses'], 0)
+        self.assertEquals(results['l2_ucache_bytes_from_memory'], 205952)
+        self.assertEquals(results['l2_ucache_bytes_to_memory'], 34496)
+
+        self.assertEquals(results['l3_ucache_fetches'], 3757)
+        self.assertEquals(results['l3_ucache_instrn_fetches'], 811)
+        self.assertEquals(results['l3_ucache_data_fetches'], 2946)
+        self.assertEquals(results['l3_ucache_read_fetches'], 2407)
+        self.assertEquals(results['l3_ucache_misses'], 3218)
+        self.assertEquals(results['l3_ucache_instrn_misses'], 811)
+        self.assertEquals(results['l3_ucache_data_misses'], 2407)
+        self.assertEquals(results['l3_ucache_read_misses'], 2407)
+        self.assertEquals(results['l3_ucache_write_miesses'], 0)
+        self.assertEquals(results['l3_ucache_bytes_from_memory'], 205952)
+        self.assertEquals(results['l3_ucache_bytes_to_memory'], 34496)
+
 
 class TestSingleContiguousDiff(unittest.TestCase):
     def setUp(self):
