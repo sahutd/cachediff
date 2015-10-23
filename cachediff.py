@@ -5,7 +5,7 @@ import re
 import subprocess
 import tempfile
 import difflib
-
+import warnings
 
 class AssemblyLine:
     '''
@@ -161,7 +161,8 @@ class Run:
     def __init__(self, sourcefile, inputfile, diff_block):
         self.sourcefile = sourcefile
         self.inputfile = inputfile
-        self.trace_file = self.run()
+        self._pintrace = self.run()
+        self.trace_file = self.transform_trace_file()
         self.global_cache_result = self.cache_simulate('global')
         self.local_cache_simulate = self.cache_simulate('local')
         self.diff_block = diff_block
@@ -170,7 +171,7 @@ class Run:
         try:
             pin = os.environ['PIN']
         except:
-            raise RuntimeError('Ensure $PIN is set')
+            raise EnvironmentError('Ensure $PIN is set')
         pin_executable = os.path.join(pin, './pin.sh')
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
@@ -192,7 +193,47 @@ class Run:
                    if 'global' consider entire file
         return Result object corresponding to cache simulator run
         '''
-        pass
+        if locality == 'local':
+            warnings.warn('Local cache analysis not implemented'
+                          'Reverting to global')
+        processor = {'-l1-isize': '64k', '-l1-dsize': '16k',
+                     '-l1-ibsize': '64', '-l1-dbsize': '64',
+                     '-l1-iassoc': '2', '-l1-dassoc': '4',
+                     '-l2-usize': '1024k', '-l2-ubsize': '64',
+                     '-l2-uassoc': '16', '-l3-usize': '8192k',
+                     '-l3-ubsize': '64', '-l3-uassoc': '16',
+                     '-l1-dwback': 'a', }
+        try:
+            dinero = os.environ['DINERO']
+        except:
+            raise EnvironmentError('ensure $DINERO is set')
+        with open(self.trace_file) as input_file:
+            argument = ' '.join(['{} {}'.format(k, v) for (k, v) in
+                                 processor.items()])
+            dinero = os.path.join(dinero, 'dineroIV')
+            command = [dinero + ' ' + argument + ' -informat d']
+            stdout = tempfile.NamedTemporaryFile(delete=False)
+            p = subprocess.Popen(command, shell=True, stdin=input_file,
+                                 stdout=stdout)
+            p.wait()
+            return stdout.name
+
+    def transform_trace_file(self):
+        t = tempfile.NamedTemporaryFile(mode='w', delete=False)
+        with open(self._pintrace) as f:
+            pintrace = f.readlines()
+        for i in pintrace:
+            if i == '#eof\n':
+                break
+            ip, op, mem = i.split()
+            ip = ip[:-1]
+            if op == 'R':
+                op = 0
+            if op == 'W':
+                op = 1
+            t.write('2 {}\n'.format(ip))
+            t.write('{} {}\n'.format(op, mem))
+        return t.name
 
 
 def single_contiguous_diff(file1, file2):
