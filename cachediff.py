@@ -72,6 +72,7 @@ class File:
         else:
             self.create_dumpfile()
         self.lines = self.init_file()
+        self.cleanup(dumpfile=dumpfile)
 
     def init_file(self):
         '''
@@ -140,6 +141,10 @@ class File:
                 return obj
 
         raise ValueError
+
+    def cleanup(self, dumpfile):
+        if not dumpfile:
+            os.remove(self.dumpfile)
 
 
 class Result:
