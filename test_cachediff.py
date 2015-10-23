@@ -38,8 +38,13 @@ class TestFile(unittest.TestCase):
         file_path = os.path.join(os.getcwd(), 'test_samples',
                                  'test_file.c')
         dumpfile = os.path.join(os.getcwd(), 'test_samples',
-                                 'test_file_dump.dump')
+                                'test_file_dump.dump')
         self.f = cachediff.File(file_path, dumpfile=dumpfile)
+        self.f1 = cachediff.File(file_path)
+
+    def test_clean_up(self):
+        self.assertTrue(os.path.exists(self.f.dumpfile))
+        self.assertFalse(os.path.exists(self.f1.dumpfile))
 
     def test_get_high_level_lines(self):
         temp = self.f.get_high_level_lines()
