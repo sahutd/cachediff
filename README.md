@@ -1,2 +1,1 @@
-.. image:: https://travis-ci.org/sahutd/cachediff.svg?branch=master
-    :target: https://travis-ci.org/sahutd/cachediff
+[![Build Status](https://travis-ci.org/sahutd/cachediff.svg?branch=master)](https://travis-ci.org/sahutd/cachediff)
