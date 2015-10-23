@@ -151,7 +151,8 @@ class Result:
     '''
     An abstract representation of a DineroIV output
     '''
-    pass
+    def __init__(self, dinero_output):
+        pass
 
 
 class Run:

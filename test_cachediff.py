@@ -91,6 +91,15 @@ class TestRun(unittest.TestCase):
         self.assertEqual(counts['2'], 10)
 
 
+class TestResult(unittest.TestCase):
+    def setUp(self):
+        path = os.path.join(os.getcwd(), 'test_samples',
+                            'dinero_output')
+        self.result = cachediff.Result(path)
+
+    def test_simple(self):
+        pass
+
 class TestSingleContiguousDiff(unittest.TestCase):
     def setUp(self):
         cwd = os.getcwd()
