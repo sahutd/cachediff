@@ -161,6 +161,22 @@ class Result:
         self.filename = dinero_output
         self.results = self.get_results()
 
+    def get_diff(self, obj_b, list_parameters):
+        '''
+        @return a dictionary with keys as given list of parameter and
+        value as difference btw parameter of both objects
+        '''
+        res_a = self.results
+        res_b = obj_b.results
+        tmp = dict()
+        for parm in list_parameters:
+            if parm in res_a.keys():
+                tmp[parm] = res_a[parm] - res_b[parm]
+            else:
+                raise ValueError
+
+        return tmp
+
     def get_results(self):
         '''
         @return the dictionay with key as cache_type_operation

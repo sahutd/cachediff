@@ -96,6 +96,21 @@ class TestResult(unittest.TestCase):
         path = os.path.join(os.getcwd(), 'test_samples',
                             'dinero_output')
         self.result = cachediff.Result(path)
+        self.result1 = cachediff.Result(path)
+
+    def test_diff(self):
+        parm = ['l1_icache_instrn_fetches',
+                'l1_dcache_read_fetches',
+                'l1_icache_instrn_miss_rate',
+                'l2_ucache_misses',
+                'l3_ucache_bytes_to_memory']
+        tmp = self.result.get_diff(self.result1,parm)
+        for i in tmp.values():
+            self.assertEqual(i,0)
+
+        with self.assertRaises(ValueError):
+            tmp = self.result.get_diff(self.result1,['ABC'])
+
 
     def test_simple(self):
         results = self.result.results
