@@ -438,7 +438,6 @@ def process(file1, file2, input1, input2):
     diff1, diff2 = single_contiguous_diff(file1, file2)
     run1 = Run(file1, input1, diff1)
     run2 = Run(file2, input2, diff2)
-    import pdb; pdb.set_trace()
     result = perform_analysis(run1, run2)
     return result
 
