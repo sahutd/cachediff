@@ -5,7 +5,6 @@ import re
 import subprocess
 import tempfile
 import difflib
-import warnings
 
 
 class AssemblyLine:
@@ -242,11 +241,10 @@ class Run:
     def __init__(self, sourcefile, inputfile, diff_block):
         self.sourcefile = sourcefile
         self.inputfile = inputfile
-        self._pintrace = self.run()
-        self.trace_file = self.transform_trace_file()
-        self.global_cache_result = self.cache_simulate('global')
-        self.local_cache_simulate = self.cache_simulate('local')
         self.diff_block = diff_block
+        self._pintrace = self.run()
+        self.global_cache_result = self.cache_simulate('global')
+        self.local_cache_result = self.cache_simulate('local')
 
     def run(self):
         try:
@@ -275,8 +273,10 @@ class Run:
         return Result object corresponding to cache simulator run
         '''
         if locality == 'local':
-            warnings.warn('Local cache analysis not implemented'
-                          'Reverting to global')
+            trace_file = self._get_local_trace_file()
+        elif locality == 'global':
+            trace_file = self._pintrace
+        trace_file = self.transform_trace_file(trace_file)
         processor = {'-l1-isize': '64k', '-l1-dsize': '16k',
                      '-l1-ibsize': '64', '-l1-dbsize': '64',
                      '-l1-iassoc': '2', '-l1-dassoc': '4',
@@ -288,7 +288,7 @@ class Run:
             dinero = os.environ['DINERO']
         except:
             raise EnvironmentError('ensure $DINERO is set')
-        with open(self.trace_file) as input_file:
+        with open(trace_file) as input_file:
             argument = ' '.join(['{} {}'.format(k, v) for (k, v) in
                                  processor.items()])
             dinero = os.path.join(dinero, 'dineroIV')
@@ -299,9 +299,27 @@ class Run:
             p.wait()
             return stdout.name
 
-    def transform_trace_file(self):
+    def _get_local_trace_file(self):
+        pintrace = self._pintrace
+        local_trace = tempfile.NamedTemporaryFile(delete=False).name
+        local_virtual_addresses = set()
+        for d in self.diff_block:
+            for address in d.get_virtual_addresses():
+                local_virtual_addresses.add(hex(address))
+        with open(pintrace) as f, open(local_trace, 'w') as out:
+            for i in f.readlines():
+                if i == '#eof\n':
+                    break
+                ip, op, mem = i.split()
+                ip = ip[:-1]
+                if ip in local_virtual_addresses:
+                        out.write('{}: {} {}\n'.format(ip, op, mem))
+            out.write('#eof\n')
+        return local_trace
+
+    def transform_trace_file(self, pintrace):
         t = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        with open(self._pintrace) as f:
+        with open(pintrace) as f:
             pintrace = f.readlines()
         for i in pintrace:
             if i == '#eof\n':

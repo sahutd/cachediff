@@ -73,10 +73,9 @@ class TestRun(unittest.TestCase):
         self.run.transform_trace_file = cachediff.Run.transform_trace_file
         self.pintrace = os.path.join(os.getcwd(), 'test_samples',
                                      'pintrace.out')
-        self.run._pintrace = self.pintrace
 
     def test_transform_trace_file(self):
-        trace_file = self.run.transform_trace_file(self.run)
+        trace_file = self.run.transform_trace_file(self.run, self.pintrace)
         with open(trace_file) as f:
             trace = f.readlines()
         self.assertEqual(len(trace), 20)
@@ -104,13 +103,12 @@ class TestResult(unittest.TestCase):
                 'l1_icache_instrn_miss_rate',
                 'l2_ucache_misses',
                 'l3_ucache_bytes_to_memory']
-        tmp = self.result.get_diff(self.result1,parm)
+        tmp = self.result.get_diff(self.result1, parm)
         for i in tmp.values():
-            self.assertEqual(i,0)
+            self.assertEqual(i, 0)
 
         with self.assertRaises(ValueError):
-            tmp = self.result.get_diff(self.result1,['ABC'])
-
+            tmp = self.result.get_diff(self.result1, ['ABC'])
 
     def test_simple(self):
         results = self.result.results
