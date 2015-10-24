@@ -7,6 +7,7 @@ import tempfile
 import difflib
 import warnings
 
+
 class AssemblyLine:
     '''
     An abstract representation of an assembly instruction
@@ -166,7 +167,7 @@ class Result:
         and value as Number (int/float)
         '''
         tmp = []
-        with open(self.filename,"r") as f:
+        with open(self.filename, "r") as f:
             tmp = f.readlines()
 
         N = len(tmp)
@@ -174,11 +175,11 @@ class Result:
         table_size = 16
         x = dict()
         while i < N:
-            if re.match("\w\d-\w+",tmp[i].strip()):
+            if re.match("\w\d-\w+", tmp[i].strip()):
                 name = tmp[i].strip().split('-')
                 name = '_'.join(name)
                 x[name] = list()
-                for j in range(1,table_size):
+                for j in range(1, table_size):
                     if tmp[i+j].strip() != '':
                         x[name].append(tmp[i+j].strip().split())
 
@@ -187,18 +188,18 @@ class Result:
                 i += 1
 
         xy = dict()
-        for k,v in x.items():
-            headers = ["_"+i.lower() for i in v[0]][1:]
+        for k, v in x.items():
+            headers = ["_"+j.lower() for j in v[0]][1:]
             headers[0] = ""
             for i in [2, 4, 5]:
-                row_name = re.findall(('[A-Za-z]+'),' '.join(v[i]))
+                row_name = re.findall(('[A-Za-z]+'), ' '.join(v[i]))
                 row_name = [j.lower() for j in row_name if j != 'Demand']
                 row_nums = []
                 if row_name[0] == 'miss':
-                    row_nums = re.findall(('\d+\.\d+'),' '.join(v[i]))
+                    row_nums = re.findall(('\d+\.\d+'), ' '.join(v[i]))
                     row_nums = [float(j) for j in row_nums]
-                else :
-                    row_nums = re.findall(('\d+'),' '.join(v[i]))
+                else:
+                    row_nums = re.findall(('\d+'), ' '.join(v[i]))
                     row_nums = [int(j) for j in row_nums]
 
                 row_name = '_'.join(row_name)
@@ -206,14 +207,17 @@ class Result:
                     xy[k+headers[col]+"_"+row_name] = row_nums[col]
 
             for i in [7, 9]:
-                row_name = [j.lower() for j in re.findall(('[A-Za-z]+'),' '.join(v[i]))]
-                row_nums = [int(j) for j in re.findall(('\d+'),' '.join(v[i]))]
+                row_name = [j.lower() for j in re.findall(('[A-Za-z]+'),
+                            ' '.join(v[i]))]
+                row_nums = [int(j) for j in re.findall(('\d+'),
+                            ' '.join(v[i]))]
 
                 row_name = '_'.join(row_name)
                 for col in range(len(row_nums)):
                     xy[k+"_"+row_name] = row_nums[col]
 
         return xy
+
 
 class Run:
     '''
