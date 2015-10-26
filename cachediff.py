@@ -419,11 +419,101 @@ def single_contiguous_diff(file1, file2):
     return (list_file1, list_file2)
 
 
+def _get_cache_output(run1, run2,cache_type, parm=[]):
+    '''
+    @return Statistical Analysis for a particular type of cache
+    '''
+    result_l1 = run1.local_cache_result.results
+    result_l2 = run2.local_cache_result.results
+    result_g1 = run1.global_cache_result.results
+    result_g2 = run2.global_cache_result.results
+    String = []
+    if cache_type == 'l1_dcache_':
+        String.append('L1 - DATA CACHE')
+        if not parm:
+            parm = [
+                    'fetches',
+                    'misses',
+                    'miss_rate',
+                    'bytes_from_memory',
+                    'bytes_to_memory'
+                    ]
+    elif cache_type == 'l1_icache_':
+        String.append('L1 - INSTRUCTION CACHE')
+        if not parm:
+            parm = [
+                    'fetches',
+                    'misses',
+                    'miss_rate',
+                    'bytes_from_memory',
+                    'bytes_to_memory'
+                    ]
+    elif cache_type == 'l2_ucache_':
+        String.append('L2 - UNIFIED CACHE')
+        if not parm:
+            parm = [
+                    'fetches',
+                    'misses',
+                    'instrn_fetches',
+                    'instrn_misses',
+                    'data_fetches',
+                    'data_misses',
+                    'miss_rate',
+                    'bytes_from_memory',
+                    'bytes_to_memory'
+                    ]
+    elif cache_type == 'l3_ucache_':
+        String.append('L3 - UNIFIED CACHE')
+        if not parm:
+            parm = [
+                    'fetches',
+                    'misses',
+                    'instrn_fetches',
+                    'instrn_misses',
+                    'data_fetches',
+                    'data_misses',
+                    'miss_rate',
+                    'bytes_from_memory',
+                    'bytes_to_memory'
+                    ]
+
+    max_ = max([len(i) for i in parm])
+    max_space = ' ' * (max_ + 3)
+    x = max_space+'LOCAL FILE1'+' '*(max_ - len('LOCAL FILE1'))+'LOCAL FILE2'
+    x += ' '*(max_ - len('LOCAL FILE2'))+'GLOBAL FILE1'
+    x += ' '*(max_ - len('GLOBAL FILE1'))+'GLOBAL FILE2'
+    String.append(x)
+
+    for p in parm:
+        title = ' '.join(p.split('_')).upper() +' '*(max_ - len(p))+' : '
+        val1 = result_l1[cache_type+p]
+        val2 = result_l2[cache_type+p]
+        val3 = result_g1[cache_type+p]
+        val4 = result_g2[cache_type+p]
+        x = title+str(val1)+' '*(max_ - len(str(val1)))+str(val2)
+        x += ' '*(max_ - len(str(val2)))+str(val3)
+        x += ' '*(max_ - len(str(val3)))+str(val4)
+        String.append(x)
+
+    String.append('\n\n\n')
+
+    return '\n'.join(String)
+
+
 def perform_analysis(run1, run2):
     '''
     Statistical Analysis between run1 and run2
+    @return A Multiline string containing the Statistics of run1 and run2
     '''
-    return
+    result1 = run1.local_cache_result.results
+    result2 = run2.local_cache_result.results
+    String = '----------LOCAL AND GLOBAL CACHE ANALYSIS----------\n'
+    String += _get_cache_output(run1, run2, 'l1_dcache_')
+    String += _get_cache_output(run1, run2, 'l1_icache_')
+    String += _get_cache_output(run1, run2, 'l2_ucache_')
+    String += _get_cache_output(run1, run2, 'l3_ucache_')
+
+    return String
 
 
 def process(file1, file2, input1, input2):
@@ -447,3 +537,4 @@ if __name__ == '__main__':
     file1 = os.path.abspath(file1)
     file2 = os.path.abspath(file2)
     result = process(file1, file2, input1, input2)
+    print(result)
