@@ -537,4 +537,3 @@ if __name__ == '__main__':
     file1 = os.path.abspath(file1)
     file2 = os.path.abspath(file2)
     result = process(file1, file2, input1, input2)
-    print(result)
