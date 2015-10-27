@@ -314,7 +314,7 @@ class Run:
                     break
                 ip, op, mem = i.split()
                 ip = ip[:-1]
-                if ip in local_virtual_addresses:
+                if ip not in local_virtual_addresses:
                         out.write('{}: {} {}\n'.format(ip, op, mem))
             out.write('#eof\n')
         return local_trace
