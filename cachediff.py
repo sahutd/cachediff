@@ -493,10 +493,11 @@ def perform_analysis(run1, run2):
         for p in parm:
             title = ' '.join(p.split('_')).upper() + \
                             ' '*(max_ - len(p))+' : '
-            val1 = result_l1[cache_type+p]
-            val2 = result_l2[cache_type+p]
-            val3 = result_g1[cache_type+p]
-            val4 = result_g2[cache_type+p]
+            temp = cache_type + p
+            val1 = result_g1[temp] - result_l1[temp]
+            val2 = result_g2[temp] - result_l2[temp]
+            val3 = result_g1[temp]
+            val4 = result_g2[temp]
             x = title+str(val1)+' '*(max_ - len(str(val1)))+str(val2)
             x += ' '*(max_ - len(str(val2)))+str(val3)
             x += ' '*(max_ - len(str(val3)))+str(val4)
