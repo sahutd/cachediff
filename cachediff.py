@@ -494,6 +494,7 @@ def perform_analysis(run1, run2):
             title = ' '.join(p.split('_')).upper() + \
                             ' '*(max_ - len(p))+' : '
             temp = cache_type + p
+            import pdb; pdb.set_trace()
             if 'RATE' in temp:
                 val1 = result_l1[temp]
                 val2 = result_l2[temp]
