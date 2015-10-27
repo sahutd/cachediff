@@ -439,7 +439,7 @@ def perform_analysis(run1, run2):
                 parm = [
                         'fetches',
                         'misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -449,7 +449,7 @@ def perform_analysis(run1, run2):
                 parm = [
                         'fetches',
                         'misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -463,7 +463,7 @@ def perform_analysis(run1, run2):
                         'instrn_misses',
                         'data_fetches',
                         'data_misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -477,7 +477,7 @@ def perform_analysis(run1, run2):
                         'instrn_misses',
                         'data_fetches',
                         'data_misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
