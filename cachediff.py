@@ -494,8 +494,12 @@ def perform_analysis(run1, run2):
             title = ' '.join(p.split('_')).upper() + \
                             ' '*(max_ - len(p))+' : '
             temp = cache_type + p
-            val1 = result_g1[temp] - result_l1[temp]
-            val2 = result_g2[temp] - result_l2[temp]
+            if 'RATE' in temp:
+                val1 = result_l1[temp]
+                val2 = result_l2[temp]
+            else:
+                val1 = result_g1[temp] - result_l1[temp]
+                val2 = result_g2[temp] - result_l2[temp]
             val3 = result_g1[temp]
             val4 = result_g2[temp]
             x = title+str(val1)+' '*(max_ - len(str(val1)))+str(val2)
