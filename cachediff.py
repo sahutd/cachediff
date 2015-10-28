@@ -107,7 +107,6 @@ class File:
             list_.append(HighLine(k, v))
         return list_
 
-
     def create_dumpfile(self):
         self.executable = '{}.out'.format(self.filename)
         obj = subprocess.Popen(['gcc', '-g', self.filename, '-o',
@@ -310,13 +309,27 @@ class Run:
             for address in d.get_virtual_addresses():
                 local_virtual_addresses.add(hex(address))
         with open(pintrace) as f, open(local_trace, 'w') as out:
-            for i in f.readlines():
+            part1 = ''
+            part2 = []
+            trace = f.readlines()
+            for i in trace:
                 if i == '#eof\n':
                     break
                 ip, op, mem = i.split()
                 ip = ip[:-1]
                 if ip not in local_virtual_addresses:
-                        out.write('{}: {} {}\n'.format(ip, op, mem))
+                        part1 += '{}: {} {}\n'.format(ip, op, mem)
+
+            for i in trace[::-1][1:]:
+                ip, op, mem = i.split()
+                ip = ip[:-1]
+                if ip not in local_virtual_addresses:
+                    part2.append('{}: {} {}\n'.format(ip, op, mem))
+                else:
+                    break
+            part2 = ''.join(part2[::-1])
+            out.write(part1)
+            out.write(part2)
             out.write('#eof\n')
         return local_trace
 
