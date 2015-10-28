@@ -377,22 +377,6 @@ def single_contiguous_diff(file1, file2):
         return (list_one, list_two)
     tmp = get_diff_lineno(file1.filename, file2.filename)
 
-    # check if more than one block is changed
-    # if tmp[0]:
-        # counter = tmp[0][0]
-        # for i in tmp[0]:
-            # if i != counter:
-                # raise ValueError
-            # else:
-                # counter += 1
-    # if tmp[1]:
-        # counter = tmp[1][0]
-        # for i in tmp[1]:
-            # if i != counter:
-                # raise ValueError
-            # else:
-                # counter += 1
-
     list_file1 = []
     list_file2 = []
     dict_file1 = dict()
