@@ -129,17 +129,17 @@ frame_dummy():
 
 0000000000400506 <main>:
 main():
-/home/saimadhav/cachediff/test_file.c:3
+/home/saimadhav/cachediff/test_samples/test_file.c:3
   400506:	55                   	push   %rbp
   400507:	48 89 e5             	mov    %rsp,%rbp
   40050a:	48 81 ec 50 9c 00 00 	sub    $0x9c50,%rsp
-/home/saimadhav/cachediff/test_file.c:6
+/home/saimadhav/cachediff/test_samples/test_file.c:6
   400511:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
   400518:	eb 57                	jmp    400571 <main+0x6b>
-/home/saimadhav/cachediff/test_file.c:8
+/home/saimadhav/cachediff/test_samples/test_file.c:8
   40051a:	c7 45 f8 00 00 00 00 	movl   $0x0,-0x8(%rbp)
   400521:	eb 44                	jmp    400567 <main+0x61>
-/home/saimadhav/cachediff/test_file.c:10 (discriminator 3)
+/home/saimadhav/cachediff/test_samples/test_file.c:10 (discriminator 3)
   400523:	8b 45 f8             	mov    -0x8(%rbp),%eax
   400526:	48 63 c8             	movslq %eax,%rcx
   400529:	8b 45 fc             	mov    -0x4(%rbp),%eax
@@ -157,18 +157,18 @@ main():
   400554:	bf 04 06 40 00       	mov    $0x400604,%edi
   400559:	b8 00 00 00 00       	mov    $0x0,%eax
   40055e:	e8 7d fe ff ff       	callq  4003e0 <printf@plt>
-/home/saimadhav/cachediff/test_file.c:8 (discriminator 3)
+/home/saimadhav/cachediff/test_samples/test_file.c:8 (discriminator 3)
   400563:	83 45 f8 01          	addl   $0x1,-0x8(%rbp)
-/home/saimadhav/cachediff/test_file.c:8 (discriminator 1)
+/home/saimadhav/cachediff/test_samples/test_file.c:8 (discriminator 1)
   400567:	83 7d f8 63          	cmpl   $0x63,-0x8(%rbp)
   40056b:	7e b6                	jle    400523 <main+0x1d>
-/home/saimadhav/cachediff/test_file.c:6 (discriminator 2)
+/home/saimadhav/cachediff/test_samples/test_file.c:6 (discriminator 2)
   40056d:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
-/home/saimadhav/cachediff/test_file.c:6 (discriminator 1)
+/home/saimadhav/cachediff/test_samples/test_file.c:6 (discriminator 1)
   400571:	83 7d fc 63          	cmpl   $0x63,-0x4(%rbp)
   400575:	7e a3                	jle    40051a <main+0x14>
   400577:	b8 00 00 00 00       	mov    $0x0,%eax
-/home/saimadhav/cachediff/test_file.c:13
+/home/saimadhav/cachediff/test_samples/test_file.c:13
   40057c:	c9                   	leaveq 
   40057d:	c3                   	retq   
   40057e:	66 90                	xchg   %ax,%ax
@@ -210,9 +210,8 @@ __libc_csu_init():
   4005e0:	41 5e                	pop    %r14
   4005e2:	41 5f                	pop    %r15
   4005e4:	c3                   	retq   
-  4005e5:	90                   	nop
-  4005e6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-  4005ed:	00 00 00 
+  4005e5:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
+  4005ec:	00 00 00 00 
 
 00000000004005f0 <__libc_csu_fini>:
 __libc_csu_fini():

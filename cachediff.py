@@ -3,6 +3,7 @@ import os
 import shutil
 import re
 import subprocess
+import collections
 import tempfile
 import difflib
 
@@ -62,7 +63,8 @@ class File:
     '''
     An abstract representation of a C/C++ file.
     '''
-    def __init__(self, filename, dumpfile=None):
+    def __init__(self, filename, dumpfile=None,
+                 _test_filename_=None):
         '''
         filename - absolute path to file
         '''
@@ -71,6 +73,7 @@ class File:
             self.dumpfile = dumpfile
         else:
             self.create_dumpfile()
+        self._test_filename_ = _test_filename_
         self.lines = self.init_file()
         self.cleanup(dumpfile=dumpfile)
 
@@ -78,34 +81,32 @@ class File:
         '''
         @return a sorted list of HighLine objects from the given filename
         '''
-        path = self.filename
-        filename = re.findall(r'/.*/(\w+\.\w+)', path)[0]
-        dumpfile = self.dumpfile
-        is_read = False
-        instr = dict()
-        line_no = 0
-        f = open(dumpfile, 'r')
-        x = f.readlines()
-        f.close()
-        for line in x:
-            if is_read and line == '\n':
-                break
-            tmp = re.findall('/.*/'+filename+':(\d+)', line)
-            if tmp:
-                is_read = True
-                line_no = tmp[0]
-                if line_no not in instr.keys():
-                    instr[line_no] = []
-            elif is_read:
-                inst = re.findall('.*', line)
-                if inst:
-                    instr[line_no].append(inst[0])
-
+        with open(self.dumpfile) as f:
+            dump = f.readlines()
+        if self._test_filename_:
+            self.filename = self._test_filename_
+        in_line = False
+        instruction = collections.OrderedDict()
+        for i in dump:
+            if not i.strip():
+                in_line = False
+                continue
+            if 'file format' in i:
+                continue
+            if i.startswith(self.filename):
+                in_line = True
+                temp = i.split()[0]
+                current_lineno = int(temp.split(':')[1])
+            elif in_line:
+                if not instruction.get(current_lineno):
+                    instruction[current_lineno] = ''
+                instruction[current_lineno] += '\n' + i
         list_ = []
-        for i, j in instr.items():
-            list_.append(HighLine(int(i), '\n'.join(j)))
-        list_.sort(key=lambda x: x.lineno)
+
+        for k, v in instruction.items():
+            list_.append(HighLine(k, v))
         return list_
+
 
     def create_dumpfile(self):
         self.executable = '{}.out'.format(self.filename)
@@ -377,22 +378,6 @@ def single_contiguous_diff(file1, file2):
         return (list_one, list_two)
     tmp = get_diff_lineno(file1.filename, file2.filename)
 
-    # check if more than one block is changed
-    if tmp[0]:
-        counter = tmp[0][0]
-        for i in tmp[0]:
-            if i != counter:
-                raise ValueError
-            else:
-                counter += 1
-    if tmp[1]:
-        counter = tmp[1][0]
-        for i in tmp[1]:
-            if i != counter:
-                raise ValueError
-            else:
-                counter += 1
-
     list_file1 = []
     list_file2 = []
     dict_file1 = dict()
@@ -406,16 +391,15 @@ def single_contiguous_diff(file1, file2):
 
     for lineno in tmp[0]:
         if lineno not in dict_file1.keys():
-            list_file1.append(HighLine(-1, ""))
+            list_file1.append(HighLine(lineno, ""))
         else:
             list_file1.append(dict_file1[lineno])
 
     for lineno in tmp[1]:
         if lineno not in dict_file2.keys():
-            list_file2.append(HighLine(-2, ""))
+            list_file2.append(HighLine(lineno, ""))
         else:
             list_file2.append(dict_file2[lineno])
-
     return (list_file1, list_file2)
 
 
@@ -439,7 +423,7 @@ def perform_analysis(run1, run2):
                 parm = [
                         'fetches',
                         'misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -449,7 +433,7 @@ def perform_analysis(run1, run2):
                 parm = [
                         'fetches',
                         'misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -463,7 +447,7 @@ def perform_analysis(run1, run2):
                         'instrn_misses',
                         'data_fetches',
                         'data_misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -477,7 +461,7 @@ def perform_analysis(run1, run2):
                         'instrn_misses',
                         'data_fetches',
                         'data_misses',
-                        'miss_rate',
+                        # 'miss_rate',
                         'bytes_from_memory',
                         'bytes_to_memory'
                         ]
@@ -494,7 +478,7 @@ def perform_analysis(run1, run2):
             title = ' '.join(p.split('_')).upper() + \
                             ' '*(max_ - len(p))+' : '
             temp = cache_type + p
-            if 'RATE' in temp:
+            if 'rate' in temp:
                 val1 = result_l1[temp]
                 val2 = result_l2[temp]
             else:

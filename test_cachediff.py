@@ -38,10 +38,18 @@ class TestFile(unittest.TestCase):
     def setUp(self):
         file_path = os.path.join(os.getcwd(), 'test_samples',
                                  'test_file.c')
+        file_path1 = os.path.join(os.getcwd(), 'test_samples',
+                                  'qsort.c')
         dumpfile = os.path.join(os.getcwd(), 'test_samples',
                                 'test_file_dump.dump')
-        self.f = cachediff.File(file_path, dumpfile=dumpfile)
+        dumpfile1 = os.path.join(os.getcwd(), 'test_samples',
+                                 'qsort_dump.dump')
+        test_prefix = '/home/saimadhav/cachediff/test_samples/'
+        self.f = cachediff.File(file_path, dumpfile,
+                                test_prefix+'test_file.c')
         self.f1 = cachediff.File(file_path)
+        self.f2 = cachediff.File(file_path1, dumpfile1,
+                                 test_prefix+'qsort.c')
 
     def test_clean_up(self):
         self.assertTrue(os.path.exists(self.f.dumpfile))
@@ -55,16 +63,20 @@ class TestFile(unittest.TestCase):
 
     def test_get_line_count(self):
         self.assertEqual(self.f.get_line_count(), 5)  # see test_file_dump.dump
+        self.assertEqual(self.f2.get_line_count(), 13)
 
     def test_get_line(self):
         hl = self.f.get_line(0x400506)
         self.assertEqual(hl.lineno, 3)
-        hl = self.f.get_line(0x400563)
-        self.assertEqual(hl.lineno, 8)
+        hl = self.f.get_line(0x400523)
+        self.assertEqual(hl.lineno, 10)
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x400580)
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x123456)
+
+        hl = self.f2.get_line(0x4006e4)
+        self.assertEqual(hl.lineno, 20)
 
 
 class TestRun(unittest.TestCase):
@@ -182,13 +194,6 @@ class TestSingleContiguousDiff(unittest.TestCase):
         self.assertEqual(len(self.diff_three[0]), 1)
         self.assertEqual(len(self.diff_three[1]), 3)
         self.assertEqual(self.diff_three[1][1].lineno, 5)
-
-    def test_diff_invalid(self):
-        '''
-        To test the case where there is more than one contiguous block
-        '''
-        with self.assertRaises(ValueError):
-            cachediff.single_contiguous_diff(self.f1, self.f3)
 
     def test_diff_empty(self):
         self.assertEqual(self.diff_two, ([], []))
