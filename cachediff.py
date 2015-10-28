@@ -78,34 +78,15 @@ class File:
         '''
         @return a sorted list of HighLine objects from the given filename
         '''
-        path = self.filename
-        filename = re.findall(r'/.*/(\w+\.\w+)', path)[0]
-        dumpfile = self.dumpfile
-        is_read = False
-        instr = dict()
-        line_no = 0
-        f = open(dumpfile, 'r')
-        x = f.readlines()
-        f.close()
-        for line in x:
-            if is_read and line == '\n':
-                break
-            tmp = re.findall('/.*/'+filename+':(\d+)', line)
-            if tmp:
-                is_read = True
-                line_no = tmp[0]
-                if line_no not in instr.keys():
-                    instr[line_no] = []
-            elif is_read:
-                inst = re.findall('.*', line)
-                if inst:
-                    instr[line_no].append(inst[0])
-
-        list_ = []
-        for i, j in instr.items():
-            list_.append(HighLine(int(i), '\n'.join(j)))
-        list_.sort(key=lambda x: x.lineno)
-        return list_
+        with open(self.dumpfile) as f:
+            dump = f.readlines()
+        instructions = {}
+        for line in dump:
+            if 'file format' in line:
+                continue
+            if line.startswith(self.filename):
+                temp = line.split()[0]
+                current_lineno = int(temp.split(':')[1])
 
     def create_dumpfile(self):
         self.executable = '{}.out'.format(self.filename)
