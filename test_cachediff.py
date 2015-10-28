@@ -38,10 +38,15 @@ class TestFile(unittest.TestCase):
     def setUp(self):
         file_path = os.path.join(os.getcwd(), 'test_samples',
                                  'test_file.c')
+        file_path1 = os.path.join(os.getcwd(), 'test_samples',
+                                  'qsort.c')
         dumpfile = os.path.join(os.getcwd(), 'test_samples',
                                 'test_file_dump.dump')
+        dumpfile1 = os.path.join(os.getcwd(), 'test_samples',
+                                 'qsort_dump.dump')
         self.f = cachediff.File(file_path, dumpfile=dumpfile)
         self.f1 = cachediff.File(file_path)
+        self.f2 = cachediff.File(file_path1, dumpfile=dumpfile1)
 
     def test_clean_up(self):
         self.assertTrue(os.path.exists(self.f.dumpfile))
@@ -55,6 +60,7 @@ class TestFile(unittest.TestCase):
 
     def test_get_line_count(self):
         self.assertEqual(self.f.get_line_count(), 5)  # see test_file_dump.dump
+        self.assertEqual(self.f2.get_line_count(), 10)
 
     def test_get_line(self):
         hl = self.f.get_line(0x400506)
@@ -65,6 +71,9 @@ class TestFile(unittest.TestCase):
             hl = self.f.get_line(0x400580)
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x123456)
+
+        hl = self.f2.get_line(0x4006e4)
+        self.assertEqual(hl.lineno, 20)
 
 
 class TestRun(unittest.TestCase):
