@@ -183,13 +183,6 @@ class TestSingleContiguousDiff(unittest.TestCase):
         self.assertEqual(len(self.diff_three[1]), 3)
         self.assertEqual(self.diff_three[1][1].lineno, 5)
 
-    def test_diff_invalid(self):
-        '''
-        To test the case where there is more than one contiguous block
-        '''
-        with self.assertRaises(ValueError):
-            cachediff.single_contiguous_diff(self.f1, self.f3)
-
     def test_diff_empty(self):
         self.assertEqual(self.diff_two, ([], []))
 
