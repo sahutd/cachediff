@@ -399,7 +399,7 @@ def single_contiguous_diff(file1, file2):
             list_file2.append(HighLine(-2, ""))
         else:
             list_file2.append(dict_file2[lineno])
-
+    import pdb; pdb.set_trace()
     return (list_file1, list_file2)
 
 
