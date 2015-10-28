@@ -81,11 +81,11 @@ class File:
         '''
         with open(self.dumpfile) as f:
             dump = f.readlines()
-        dump = [i.strip() for i in dump if i.strip()]
         in_line = False
         instruction = collections.OrderedDict()
         for i in dump:
-            if not i:
+            if not i.strip():
+                in_line = False
                 continue
             if 'file format' in i:
                 continue
@@ -96,8 +96,9 @@ class File:
             elif in_line:
                 if not instruction.get(current_lineno):
                     instruction[current_lineno] = ''
-                instruction[current_lineno] += i
+                instruction[current_lineno] += '\n' + i
         list_ = []
+
         for k, v in instruction.items():
             list_.append(HighLine(k, v))
         return list_
@@ -132,7 +133,6 @@ class File:
         '''
         return HighLine object coressponding to virtual_address
         '''
-        import pdb; pdb.set_trace()
         for obj in self.lines:
             if virtual_address in obj.assembly_instructions:
                 return obj
