@@ -80,13 +80,23 @@ class File:
         '''
         with open(self.dumpfile) as f:
             dump = f.readlines()
-        instructions = {}
-        for line in dump:
-            if 'file format' in line:
+        dump = [i.strip() for i in dump if i.strip()]
+        in_line = False
+        instruction = {}
+        for i in dump:
+            if not i:
                 continue
-            if line.startswith(self.filename):
-                temp = line.split()[0]
+            if i.startswith(self.filename):
+                in_line = True
+                temp = i.split()[0]
                 current_lineno = int(temp.split(':')[1])
+            elif in_line:
+                if not instruction.get(current_lineno):
+                    instruction[current_lineno] = ''
+                instruction[current_lineno] += i
+        for k, v in instruction.items():
+            print(k)
+
 
     def create_dumpfile(self):
         self.executable = '{}.out'.format(self.filename)
