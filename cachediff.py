@@ -499,6 +499,7 @@ def perform_analysis(run1, run2):
                 val2 = result_g2[temp] - result_l2[temp]
             val3 = result_g1[temp]
             val4 = result_g2[temp]
+            val1, val2, val3, val4 = list(map(abs, [val1, val2, val3, val4]))
             x = title+str(val1)+' '*(max_ - len(str(val1)))+str(val2)
             x += ' '*(max_ - len(str(val2)))+str(val3)
             x += ' '*(max_ - len(str(val3)))+str(val4)
