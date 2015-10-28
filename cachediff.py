@@ -390,16 +390,16 @@ def single_contiguous_diff(file1, file2):
 
     for lineno in tmp[0]:
         if lineno not in dict_file1.keys():
-            list_file1.append(HighLine(-1, ""))
+            list_file1.append(HighLine(lineno, ""))
         else:
             list_file1.append(dict_file1[lineno])
 
     for lineno in tmp[1]:
         if lineno not in dict_file2.keys():
-            list_file2.append(HighLine(-2, ""))
+            list_file2.append(HighLine(lineno, ""))
         else:
             list_file2.append(dict_file2[lineno])
-    import pdb; pdb.set_trace()
+
     return (list_file1, list_file2)
 
 
