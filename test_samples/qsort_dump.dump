@@ -302,9 +302,8 @@ __libc_csu_init():
   4007b0:	41 5e                	pop    %r14
   4007b2:	41 5f                	pop    %r15
   4007b4:	c3                   	retq   
-  4007b5:	90                   	nop
-  4007b6:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
-  4007bd:	00 00 00 
+  4007b5:	66 66 2e 0f 1f 84 00 	data16 nopw %cs:0x0(%rax,%rax,1)
+  4007bc:	00 00 00 00 
 
 00000000004007c0 <__libc_csu_fini>:
 __libc_csu_fini():

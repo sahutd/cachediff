@@ -3,6 +3,7 @@ import os
 import shutil
 import re
 import subprocess
+import collections
 import tempfile
 import difflib
 
@@ -82,9 +83,11 @@ class File:
             dump = f.readlines()
         dump = [i.strip() for i in dump if i.strip()]
         in_line = False
-        instruction = {}
+        instruction = collections.OrderedDict()
         for i in dump:
             if not i:
+                continue
+            if 'file format' in i:
                 continue
             if i.startswith(self.filename):
                 in_line = True
@@ -94,8 +97,10 @@ class File:
                 if not instruction.get(current_lineno):
                     instruction[current_lineno] = ''
                 instruction[current_lineno] += i
+        list_ = []
         for k, v in instruction.items():
-            print(k)
+            list_.append(HighLine(k, v))
+        return list_
 
 
     def create_dumpfile(self):
@@ -127,6 +132,7 @@ class File:
         '''
         return HighLine object coressponding to virtual_address
         '''
+        import pdb; pdb.set_trace()
         for obj in self.lines:
             if virtual_address in obj.assembly_instructions:
                 return obj

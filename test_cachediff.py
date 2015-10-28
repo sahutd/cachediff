@@ -60,13 +60,13 @@ class TestFile(unittest.TestCase):
 
     def test_get_line_count(self):
         self.assertEqual(self.f.get_line_count(), 5)  # see test_file_dump.dump
-        self.assertEqual(self.f2.get_line_count(), 10)
+        self.assertEqual(self.f2.get_line_count(), 13)
 
     def test_get_line(self):
         hl = self.f.get_line(0x400506)
         self.assertEqual(hl.lineno, 3)
-        hl = self.f.get_line(0x400563)
-        self.assertEqual(hl.lineno, 8)
+        hl = self.f.get_line(0x400523)
+        self.assertEqual(hl.lineno, 10)
         with self.assertRaises(ValueError):
             hl = self.f.get_line(0x400580)
         with self.assertRaises(ValueError):
