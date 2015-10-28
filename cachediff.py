@@ -63,7 +63,8 @@ class File:
     '''
     An abstract representation of a C/C++ file.
     '''
-    def __init__(self, filename, dumpfile=None):
+    def __init__(self, filename, dumpfile=None,
+                 _test_filename_=None):
         '''
         filename - absolute path to file
         '''
@@ -72,6 +73,7 @@ class File:
             self.dumpfile = dumpfile
         else:
             self.create_dumpfile()
+        self._test_filename_ = _test_filename_
         self.lines = self.init_file()
         self.cleanup(dumpfile=dumpfile)
 
@@ -81,6 +83,8 @@ class File:
         '''
         with open(self.dumpfile) as f:
             dump = f.readlines()
+        if self._test_filename_:
+            self.filename = self._test_filename_
         in_line = False
         instruction = collections.OrderedDict()
         for i in dump:

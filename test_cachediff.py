@@ -44,9 +44,12 @@ class TestFile(unittest.TestCase):
                                 'test_file_dump.dump')
         dumpfile1 = os.path.join(os.getcwd(), 'test_samples',
                                  'qsort_dump.dump')
-        self.f = cachediff.File(file_path, dumpfile=dumpfile)
+        test_prefix = '/home/saimadhav/cachediff/test_samples/'
+        self.f = cachediff.File(file_path, dumpfile,
+                                test_prefix+'test_file.c')
         self.f1 = cachediff.File(file_path)
-        self.f2 = cachediff.File(file_path1, dumpfile=dumpfile1)
+        self.f2 = cachediff.File(file_path1, dumpfile1,
+                                 test_prefix+'qsort.c')
 
     def test_clean_up(self):
         self.assertTrue(os.path.exists(self.f.dumpfile))
