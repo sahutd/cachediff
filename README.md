@@ -13,6 +13,9 @@ To run the test-suite
 nosetests
 ```
 
+##Example output
+![Sample Cachediff output](http://i.imgur.com/BmHT8sV.png)
+
 ##Requirements
 * [Intel Pin](https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads)
 ```
