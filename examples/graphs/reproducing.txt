@@ -1,0 +1,10 @@
+*sample file to reproduce graphs in matrix form*
+f[V_]:=(dense=RandomGraph[{V,Ceiling[0.9*V*(V-1)]}, DirectedEdges->True];
+                   Export[StringJoin[ToString[V], "-dense-AdjacencyMatrix",".out"],
+                          MatrixForm[AdjacencyMatrix[dense]], "Table"]);
+g[V_]:=(sparse=RandomGraph[{V,Ceiling[0.1*V*(V-1)]}, DirectedEdges->True];
+                   Export[StringJoin[ToString[V], "-sparse-AdjacencyMatrix",".out"],
+                          MatrixForm[AdjacencyMatrix[sparse]], "Table"]);
+h[V_]:=(median=RandomGraph[{V,Ceiling[0.5*V*(V-1)]}, DirectedEdges->True];
+                   Export[StringJoin[ToString[V], "-median-AdjacencyMatrix",".out"],
+                          MatrixForm[AdjacencyMatrix[median]], "Table"]);
