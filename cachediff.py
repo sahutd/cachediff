@@ -6,6 +6,8 @@ import subprocess
 import collections
 import tempfile
 import difflib
+import tkinter as tk
+import tkinter.filedialog
 
 
 class AssemblyLine:
@@ -534,9 +536,82 @@ def process(file1, file2, input1, input2):
     return result
 
 
+class File_GUI():
+    def __init__(self, parent):
+        self.parent = parent
+        self.frame = tk.Frame(self.parent)
+        self.display = tk.Listbox(self.frame)
+        self.source_button = tk.Button(self.frame, text='Choose source',
+                                       command=self.askopensource)
+        self.input_button = tk.Button(self.frame, text='Choose input',
+                                      command=self.askopeninput)
+        self.input = None
+        self.source = None
+
+    def pack(self, *args, **kwargs):
+        self.frame.pack(*args, **kwargs)
+        self.display.pack(side=tk.TOP)
+        self.source_button.pack(side=tk.LEFT)
+        self.input_button.pack(side=tk.LEFT)
+
+    def askopensource(self):
+        self.source = tkinter.filedialog.askopenfile().name
+        self.file = File(source)
+        self.updatedisplay()
+
+    def askopeninput(self):
+        self.input = tkinter.filedialog.askopenfile().name
+
+    def updatedisplay(self):
+        '''
+        todo - read source file and fill into listbox display
+        '''
+        pass
+
+    def get_selected(self):
+        '''
+        return HighLine objects corresponding to selected lines
+        '''
+        pass
+
+
+
+class GUI:
+    def __init__(self):
+        self.app = tk.Tk()
+        self.file1 = File_GUI(self.app)
+        self.file2 = File_GUI(self.app)
+        self.controller = tk.Frame(self.app)
+        self.fill_controller()
+
+    def start(self):
+        self.file1.pack(side=tk.LEFT)
+        self.file2.pack(side=tk.LEFT)
+        self.controller.pack()
+        self.app.mainloop()
+
+    def fill_controller(self):
+        self.autodiff_button = tk.Button(self.controller, text='Autodiff',
+                                         command=self.autodiff)
+        self.run_button = tk.Button(self.controller, text='Run',
+                                    command=self.run)
+        self.autodiff_button.pack()
+        self.run_button.pack()
+
+    def autodiff(self):
+        ''' todo - compute the diff of the two sources using single contiguous diff.
+                   The attribute to pass is self.file
+                   autoselect the differing lines in listbox display
+        '''
+        pass
+
+    def run(self):
+        '''
+        todo:
+        '''
+        pass
+
+
 if __name__ == '__main__':
-    file1, file2, input1, input2 = sys.argv[1:5]
-    file1 = os.path.abspath(file1)
-    file2 = os.path.abspath(file2)
-    result = process(file1, file2, input1, input2)
-    print(result)
+    g = GUI()
+    g.start()
