@@ -1,4 +1,3 @@
-import sys
 import os
 import shutil
 import re
@@ -540,7 +539,8 @@ class File_GUI():
     def __init__(self, parent):
         self.parent = parent
         self.frame = tk.Frame(self.parent)
-        self.display = tk.Listbox(self.frame)
+        self.display = tk.Listbox(self.frame, selectmode=tk.MULTIPLE,
+                                  exportselection=0)
         self.source_button = tk.Button(self.frame, text='Choose source',
                                        command=self.askopensource)
         self.input_button = tk.Button(self.frame, text='Choose input',
@@ -556,29 +556,36 @@ class File_GUI():
 
     def askopensource(self):
         self.source = tkinter.filedialog.askopenfile().name
-        self.file = File(source)
         self.updatedisplay()
 
     def askopeninput(self):
         self.input = tkinter.filedialog.askopenfile().name
 
     def updatedisplay(self):
-        '''
-        todo - read source file and fill into listbox display
-        '''
-        pass
+        with open(self.source) as f:
+            source = f.readlines()
+        self.display.delete(0, tk.END)
+        self.file = File(self.source)
+        for i in source:
+            self.display.insert(tk.END, i)
 
     def get_selected(self):
         '''
         return HighLine objects corresponding to selected lines
         '''
-        pass
-
+        selected = self.display.curselection()
+        selected = set([int(i) + 1 for i in selected])
+        highlines = []
+        for line in self.file.get_high_level_lines():
+            if line.lineno in selected:
+                highlines.append(line)
+        return highlines
 
 
 class GUI:
     def __init__(self):
         self.app = tk.Tk()
+        self.app.geometry('600x400')
         self.file1 = File_GUI(self.app)
         self.file2 = File_GUI(self.app)
         self.controller = tk.Frame(self.app)
@@ -599,18 +606,26 @@ class GUI:
         self.run_button.pack()
 
     def autodiff(self):
-        ''' todo - compute the diff of the two sources using single contiguous diff.
-                   The attribute to pass is self.file
-                   autoselect the differing lines in listbox display
-        '''
-        pass
+        diff1, diff2 = single_contiguous_diff(self.file1.file,
+                                              self.file2.file)
+        self.file1.display.selection_clear(0, tk.END)
+        self.file2.display.selection_clear(0, tk.END)
+        for line in diff1:
+            self.file1.display.selection_set(line.lineno - 1)
+
+        for line in diff2:
+            self.file2.display.selection_set(line.lineno - 1)
 
     def run(self):
         '''
         todo:
         '''
-        pass
-
+        run1 = Run(self.file1.file, self.file1.input,
+                   self.file1.get_selected())
+        run2 = Run(self.file2.file, self.file2.input,
+                   self.file2.get_selected())
+        result = perform_analysis(run1, run2)
+        print(result)
 
 if __name__ == '__main__':
     g = GUI()
