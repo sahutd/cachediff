@@ -629,7 +629,6 @@ class GUI:
         run2 = Run(self.file2.file, self.file2.input,
                    self.file2.get_selected())
         result = perform_analysis(run1, run2)
-
         print(result)
 
 if __name__ == '__main__':
