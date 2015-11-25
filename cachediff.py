@@ -567,7 +567,7 @@ class File_GUI():
         self.display.delete(0, tk.END)
         self.file = File(self.source)
         for i in source:
-            self.display.insert(tk.END, i)
+            self.display.insert(tk.END, i[:-1])
 
     def get_selected(self):
         '''
