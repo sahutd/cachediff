@@ -536,7 +536,7 @@ def process(file1, file2, input1, input2):
 
 
 class File_GUI():
-    def __init__(self, parent):
+    def __init__(self, parent, label_text):
         self.parent = parent
         self.frame = tk.Frame(self.parent)
         self.display = tk.Listbox(self.frame, selectmode=tk.MULTIPLE,
@@ -545,14 +545,16 @@ class File_GUI():
                                        command=self.askopensource)
         self.input_button = tk.Button(self.frame, text='Choose input',
                                       command=self.askopeninput)
+        self.label = tk.Label(self.frame, text=label_text)
         self.input = None
         self.source = None
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
-        self.display.pack(side=tk.TOP)
-        self.source_button.pack(side=tk.LEFT)
-        self.input_button.pack(side=tk.LEFT)
+        self.label.pack(side=tk.TOP, fill=tk.BOTH)
+        self.display.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.source_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.input_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     def askopensource(self):
         self.source = tkinter.filedialog.askopenfile().name
@@ -586,15 +588,17 @@ class GUI:
     def __init__(self):
         self.app = tk.Tk()
         self.app.geometry('600x400')
-        self.file1 = File_GUI(self.app)
-        self.file2 = File_GUI(self.app)
+        self.file1 = File_GUI(self.app, 'Version 1')
+        self.file2 = File_GUI(self.app, 'Version 2')
         self.controller = tk.Frame(self.app)
         self.fill_controller()
 
     def start(self):
-        self.file1.pack(side=tk.LEFT)
-        self.file2.pack(side=tk.LEFT)
-        self.controller.pack()
+        self.file1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True,
+                        pady=20, padx=10)
+        self.file2.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True,
+                        pady=20, padx=10)
+        self.controller.pack(fill=tk.BOTH, expand=True)
         self.app.mainloop()
 
     def fill_controller(self):
@@ -602,8 +606,8 @@ class GUI:
                                          command=self.autodiff)
         self.run_button = tk.Button(self.controller, text='Run',
                                     command=self.run)
-        self.autodiff_button.pack()
-        self.run_button.pack()
+        self.autodiff_button.pack(side=tk.LEFT)
+        self.run_button.pack(side=tk.LEFT)
 
     def autodiff(self):
         diff1, diff2 = single_contiguous_diff(self.file1.file,
@@ -617,9 +621,6 @@ class GUI:
             self.file2.display.selection_set(line.lineno - 1)
 
     def run(self):
-        '''
-        todo:
-        '''
         run1 = Run(self.file1.file, self.file1.input,
                    self.file1.get_selected())
         run2 = Run(self.file2.file, self.file2.input,
