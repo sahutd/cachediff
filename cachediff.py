@@ -551,10 +551,10 @@ class File_GUI():
 
     def pack(self, *args, **kwargs):
         self.frame.pack(*args, **kwargs)
-        self.label.pack(side=tk.TOP,fill=tk.BOTH)
-        self.display.pack(side=tk.TOP,fill=tk.BOTH,expand=True)
-        self.source_button.pack(side=tk.LEFT,fill=tk.BOTH,expand=True)
-        self.input_button.pack(side=tk.RIGHT,fill=tk.BOTH,expand=True)
+        self.label.pack(side=tk.TOP, fill=tk.BOTH)
+        self.display.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.source_button.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.input_button.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     def askopensource(self):
         self.source = tkinter.filedialog.askopenfile().name
@@ -595,9 +595,9 @@ class GUI:
 
     def start(self):
         self.file1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True,
-                pady=20, padx=10)
+                        pady=20, padx=10)
         self.file2.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True,
-                pady=20, padx=10)
+                        pady=20, padx=10)
         self.controller.pack(fill=tk.BOTH, expand=True)
         self.app.mainloop()
 
@@ -621,9 +621,6 @@ class GUI:
             self.file2.display.selection_set(line.lineno - 1)
 
     def run(self):
-        '''
-        todo:
-        '''
         run1 = Run(self.file1.file, self.file1.input,
                    self.file1.get_selected())
         run2 = Run(self.file2.file, self.file2.input,
