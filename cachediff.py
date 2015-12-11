@@ -258,7 +258,7 @@ class Run:
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
         stdin = open(self.inputfile)
-        p = subprocess.Popen([pin_executable, '-t', tracer,
+        p = subprocess.Popen([pin_executable, '-injection', 'child', '-t', tracer,
                               '--',
                               self.sourcefile.executable],
                              stdin=stdin,
@@ -313,21 +313,24 @@ class Run:
             part1 = ''
             part2 = []
             trace = f.readlines()
+            search_backwards_flag = True
             for i in trace:
                 if i == '#eof\n':
+                    search_backwards_flag = False
                     break
                 ip, op, mem = i.split()
                 ip = ip[:-1]
                 if ip not in local_virtual_addresses:
                         part1 += '{}: {} {}\n'.format(ip, op, mem)
 
-            for i in trace[::-1][1:]:
-                ip, op, mem = i.split()
-                ip = ip[:-1]
-                if ip not in local_virtual_addresses:
-                    part2.append('{}: {} {}\n'.format(ip, op, mem))
-                else:
-                    break
+            if search_backwards_flag:
+                for i in trace[::-1][1:]:
+                    ip, op, mem = i.split()
+                    ip = ip[:-1]
+                    if ip not in local_virtual_addresses:
+                        part2.append('{}: {} {}\n'.format(ip, op, mem))
+                    else:
+                        break
             part2 = ''.join(part2[::-1])
             out.write(part1)
             out.write(part2)
