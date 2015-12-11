@@ -257,7 +257,7 @@ class Run:
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
         stdin = open(self.inputfile)
-        p = subprocess.Popen([pin_executable, '-t', tracer,
+        p = subprocess.Popen([pin_executable, '-injection', 'child', '-t', tracer,
                               '--',
                               self.sourcefile.executable],
                              stdin=stdin,
