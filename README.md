@@ -37,14 +37,12 @@ export DINERO=/path/to/dinero/folder
 4. Now replace the the MyPinTool folder from 
 ```
 your_present_directory/pin/source/tools/MyPinTool to your_present_directory/cachediff/pin/source/tools/MyPinTool
-```
 This can be done by 
-```
 your_present_directory$: rm -r pin/source/tools/MyPinTool
 your_present_directory$: cp your_present_directory/cachediff/pin/source/tools/MyPinTool    pin/source/tools/
 ```
  
-5. Make the [Intel Pin](https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads) examples.
+5. Make the [Intel Pin](https://software.intel.com/en-us/articles/pin-a-binary-instrumentation-tool-downloads)
 ```
 your_present_directory$: cd pin/source/tools/
 your_present_directory$: make
