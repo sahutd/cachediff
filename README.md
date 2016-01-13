@@ -37,7 +37,9 @@ export DINERO=/path/to/dinero/folder
 4. Now replace the the MyPinTool folder from 
 ```
 your_present_directory/pin/source/tools/MyPinTool to your_present_directory/cachediff/pin/source/tools/MyPinTool
+```
 This can be done by 
+```
 your_present_directory$: rm -r pin/source/tools/MyPinTool
 your_present_directory$: cp your_present_directory/cachediff/pin/source/tools/MyPinTool    pin/source/tools/
 ```
