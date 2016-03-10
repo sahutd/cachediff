@@ -67,7 +67,7 @@ your_present_directory$: source ~/.bashrc
 
 8. [Disable ASLR](http://askubuntu.com/questions/318315/how-can-i-temporarily-disable-aslr-address-space-layout-randomization)
 ```
-your_present_directory$: setarch $(uname -m) -RL bash
+your_present_directory$: setarch `uname -m` -R /bin/bash
 ```
 (Dont forget to revert once done, this is a **SECURITY HAZARD**)
 
