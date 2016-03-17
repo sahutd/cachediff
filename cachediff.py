@@ -7,6 +7,7 @@ import collections
 import tempfile
 import difflib
 import logging
+import itertools
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
@@ -292,7 +293,6 @@ class Run:
             trace_file = self._get_local_trace_file()
         elif locality == 'global':
             trace_file = self._pintrace
-        trace_file = self.transform_trace_file(trace_file)
         processor = {'-l1-isize': '64k', '-l1-dsize': '16k',
                      '-l1-ibsize': '64', '-l1-dbsize': '64',
                      '-l1-iassoc': '2', '-l1-dassoc': '4',
@@ -318,6 +318,13 @@ class Run:
             return stdout.name
 
     def _get_local_trace_file(self):
+
+        def grouper(iterable, n, fillvalue=None):
+            "Collect data into fixed-length chunks or blocks"
+            # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+            args = [iter(iterable)] * n
+            return itertools.zip_longest(*args, fillvalue=fillvalue)
+
         logging.debug('START: generate local trace for %s' %
                       self.sourcefile.filename)
         pintrace = self._pintrace
@@ -330,49 +337,26 @@ class Run:
             part1 = ''
             part2 = []
             trace = f.readlines()
-            for i in trace:
-                if i == '#eof\n':
-                    break
-                ip, op, mem = i.split()
-                ip = ip[:-1]
+            for instrn_trace, mem_trace in grouper(trace, 2):
+                ip = instrn_trace.split()[1]
                 if ip not in local_virtual_addresses:
-                        part1 += '{}: {} {}\n'.format(ip, op, mem)
+                    part1 += mem_trace
+                    part1 += instrn_trace
 
-            for i in trace[::-1][1:]:
-                ip, op, mem = i.split()
-                ip = ip[:-1]
+            for mem_trace, instrn_trace in grouper(trace[::-1], 2):
+                ip = instrn_trace.split()[1]
                 if ip not in local_virtual_addresses:
-                    part2.append('{}: {} {}\n'.format(ip, op, mem))
+                    part2.append(mem_trace)
+                    part2.append(instrn_trace)
                 else:
                     break
             part2 = ''.join(part2[::-1])
             out.write(part1)
             out.write(part2)
-            out.write('#eof\n')
         logging.debug('END: generate local trace for %s' %
                       self.sourcefile.filename)
         return local_trace
 
-    def transform_trace_file(self, pintrace):
-        logging.debug('START: transform trace for %s' %
-                      self.sourcefile.filename)
-        t = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        with open(pintrace) as f:
-            pintrace = f.readlines()
-        for i in pintrace:
-            if i == '#eof\n':
-                break
-            ip, op, mem = i.split()
-            ip = ip[:-1]
-            if op == 'R':
-                op = 0
-            if op == 'W':
-                op = 1
-            t.write('2 {}\n'.format(ip))
-            t.write('{} {}\n'.format(op, mem))
-        logging.debug('END: transform trace for %s' %
-                      self.sourcefile.filename)
-        return t.name
 
 
 def single_contiguous_diff(file1, file2):

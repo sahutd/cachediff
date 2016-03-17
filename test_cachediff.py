@@ -86,21 +86,6 @@ class TestRun(unittest.TestCase):
         self.pintrace = os.path.join(os.getcwd(), 'test_samples',
                                      'pintrace.out')
 
-    def test_transform_trace_file(self):
-        trace_file = self.run.transform_trace_file(self.run, self.pintrace)
-        with open(trace_file) as f:
-            trace = f.readlines()
-        self.assertEqual(len(trace), 20)
-        self.assertIn('1 0x7ffdd2893948\n', trace)
-        self.assertIn('0 0x7f23ba8c0e70\n', trace)
-        self.assertIn('2 0x7f23ba6a1193\n', trace)
-        counts = {'0': 0, '1': 0, '2': 0}
-        for i in trace:
-            counts[i.split()[0]] += 1
-        self.assertEqual(counts['0'], 2)
-        self.assertEqual(counts['1'], 8)
-        self.assertEqual(counts['2'], 10)
-
 
 class TestResult(unittest.TestCase):
     def setUp(self):

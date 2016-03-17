@@ -1,8 +1,8 @@
-/*BEGIN_LEGAL 
-Intel Open Source License 
+/*BEGIN_LEGAL
+Intel Open Source License
 
 Copyright (c) 2002-2015 Intel Corporation. All rights reserved.
- 
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -15,7 +15,7 @@ other materials provided with the distribution.  Neither the name of
 the Intel Corporation nor the names of its contributors may be used to
 endorse or promote products derived from this software without
 specific prior written permission.
- 
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -35,19 +35,24 @@ END_LEGAL */
 #include <stdio.h>
 #include "pin.H"
 
+#define READ_OP 0
+#define WRITE_OP 1
+#define IP_FETCH 2
 
 FILE * trace;
 
 // Print a memory read record
 VOID RecordMemRead(VOID * ip, VOID * addr)
 {
-    fprintf(trace,"%p: R %p\n", ip, addr);
+    fprintf(trace, "%d %p\n", IP_FETCH, ip);
+    fprintf(trace, "%d %p\n", READ_OP, addr);
 }
 
 // Print a memory write record
 VOID RecordMemWrite(VOID * ip, VOID * addr)
 {
-    fprintf(trace,"%p: W %p\n", ip, addr);
+    fprintf(trace, "%d %p\n", IP_FETCH, ip);
+    fprintf(trace, "%d %p\n", WRITE_OP, addr);
 }
 
 // Is called for every instruction and instruments reads and writes
@@ -56,7 +61,7 @@ VOID Instruction(INS ins, VOID *v)
     // Instruments memory accesses using a predicated call, i.e.
     // the instrumentation is called iff the instruction will actually be executed.
     //
-    // On the IA-32 and Intel(R) 64 architectures conditional moves and REP 
+    // On the IA-32 and Intel(R) 64 architectures conditional moves and REP
     // prefixed instructions appear as predicated instructions in Pin.
     UINT32 memOperands = INS_MemoryOperandCount(ins);
 
@@ -71,7 +76,7 @@ VOID Instruction(INS ins, VOID *v)
                 IARG_MEMORYOP_EA, memOp,
                 IARG_END);
         }
-        // Note that in some architectures a single memory operand can be 
+        // Note that in some architectures a single memory operand can be
         // both read and written (for instance incl (%eax) on IA-32)
         // In that case we instrument it once for read and once for write.
         if (INS_MemoryOperandIsWritten(ins, memOp))
@@ -87,17 +92,16 @@ VOID Instruction(INS ins, VOID *v)
 
 VOID Fini(INT32 code, VOID *v)
 {
-    fprintf(trace, "#eof\n");
     fclose(trace);
 }
 
 /* ===================================================================== */
 /* Print Help Message                                                    */
 /* ===================================================================== */
-   
+
 INT32 Usage()
 {
-    PIN_ERROR( "This Pintool prints a trace of memory addresses\n" 
+    PIN_ERROR( "This Pintool prints a trace of memory addresses\n"
               + KNOB_BASE::StringKnobSummary() + "\n");
     return -1;
 }
@@ -117,6 +121,6 @@ int main(int argc, char *argv[])
 
     // Never returns
     PIN_StartProgram();
-    
+
     return 0;
 }
