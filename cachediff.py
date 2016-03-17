@@ -6,6 +6,9 @@ import subprocess
 import collections
 import tempfile
 import difflib
+import logging
+
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
 
 
 class AssemblyLine:
@@ -68,6 +71,7 @@ class File:
         '''
         filename - absolute path to file
         '''
+        logging.debug('START: Creating File() for %s' % filename)
         self.filename = filename
         if dumpfile:
             self.dumpfile = dumpfile
@@ -76,6 +80,7 @@ class File:
         self._test_filename_ = _test_filename_
         self.lines = self.init_file()
         self.cleanup(dumpfile=dumpfile)
+        logging.debug('END: Creating File() for %s' % filename)
 
     def init_file(self):
         '''
@@ -239,6 +244,7 @@ class Run:
     Class to hold all results of a run
     '''
     def __init__(self, sourcefile, inputfile, diff_block):
+        logging.debug('START: Creating Run() for %s' % sourcefile.filename)
         self.sourcefile = sourcefile
         self.inputfile = inputfile
         self.diff_block = diff_block
@@ -247,8 +253,11 @@ class Run:
         self.local_cache_result = self.cache_simulate('local')
         self.global_cache_result = Result(self.global_cache_result)
         self.local_cache_result = Result(self.local_cache_result)
+        logging.debug('END: Run() for %s' % sourcefile.filename)
 
     def run(self):
+        logging.debug('START: Running executable for %s under PIN' %
+                      self.sourcefile.filename)
         try:
             pin = os.environ['PIN']
         except:
@@ -257,7 +266,8 @@ class Run:
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
         stdin = open(self.inputfile)
-        p = subprocess.Popen([pin_executable, '-injection', 'child', '-t', tracer,
+        p = subprocess.Popen([pin_executable, '-injection', 'child', '-t',
+                              tracer,
                               '--',
                               self.sourcefile.executable],
                              stdin=stdin,
@@ -265,6 +275,8 @@ class Run:
         p.wait()
         trace_file = tempfile.NamedTemporaryFile().name
         shutil.move('pinatrace.out', trace_file)
+        logging.debug('END: Running executable for %s under PIN' %
+                      self.sourcefile.filename)
         return trace_file
 
     def cache_simulate(self, locality):
@@ -274,6 +286,8 @@ class Run:
                    if 'global' consider entire file
         return Result object corresponding to cache simulator run
         '''
+        logging.debug('START: %s simulation for %s' %
+                      (locality, self.sourcefile.filename))
         if locality == 'local':
             trace_file = self._get_local_trace_file()
         elif locality == 'global':
@@ -299,9 +313,13 @@ class Run:
             p = subprocess.Popen(command, shell=True, stdin=input_file,
                                  stdout=stdout)
             p.wait()
+            logging.debug('END: %s simulation for %s' %
+                          (locality, self.sourcefile.filename))
             return stdout.name
 
     def _get_local_trace_file(self):
+        logging.debug('START: generate local trace for %s' %
+                      self.sourcefile.filename)
         pintrace = self._pintrace
         local_trace = tempfile.NamedTemporaryFile(delete=False).name
         local_virtual_addresses = set()
@@ -331,9 +349,13 @@ class Run:
             out.write(part1)
             out.write(part2)
             out.write('#eof\n')
+        logging.debug('END: generate local trace for %s' %
+                      self.sourcefile.filename)
         return local_trace
 
     def transform_trace_file(self, pintrace):
+        logging.debug('START: transform trace for %s' %
+                      self.sourcefile.filename)
         t = tempfile.NamedTemporaryFile(mode='w', delete=False)
         with open(pintrace) as f:
             pintrace = f.readlines()
@@ -348,6 +370,8 @@ class Run:
                 op = 1
             t.write('2 {}\n'.format(ip))
             t.write('{} {}\n'.format(op, mem))
+        logging.debug('END: transform trace for %s' %
+                      self.sourcefile.filename)
         return t.name
 
 
@@ -425,6 +449,7 @@ def perform_analysis(run1, run2):
         '''
         @return Statistical Analysis for a particular type of cache
         '''
+        logging.debug('START: result Analysis')
         result_l1 = run1.local_cache_result.results
         result_l2 = run2.local_cache_result.results
         result_g1 = run1.global_cache_result.results
@@ -515,6 +540,8 @@ def perform_analysis(run1, run2):
     result_string += _get_cache_output(run1, run2, 'l2_ucache_')
     result_string += _get_cache_output(run1, run2, 'l3_ucache_')
 
+    logging.debug('END: result Analysis')
+
     return result_string
 
 
@@ -525,12 +552,14 @@ def process(file1, file2, input1, input2):
     of file1 and file2
     return - an object of ResultDiff
     '''
+    logging.debug('START: Process %s %s' % (file1, file2))
     file1 = File(file1)
     file2 = File(file2)
     diff1, diff2 = single_contiguous_diff(file1, file2)
     run1 = Run(file1, input1, diff1)
     run2 = Run(file2, input2, diff2)
     result = perform_analysis(run1, run2)
+    logging.debug('END: Process %s %s' % (file1, file2))
     return result
 
 
