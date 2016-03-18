@@ -284,7 +284,7 @@ class Run:
 
     def run(self):
         logger.info('START: Running executable for %s under PIN' %
-                     self.sourcefile.filename)
+                    self.sourcefile.filename)
         try:
             pin = os.environ['PIN']
         except:
@@ -303,7 +303,7 @@ class Run:
         trace_file = tempfile.NamedTemporaryFile().name
         shutil.move('pinatrace.out', trace_file)
         logger.info('END: Running executable for %s under PIN' %
-                     self.sourcefile.filename)
+                    self.sourcefile.filename)
         return trace_file
 
     def cache_simulate(self, locality):
@@ -314,7 +314,7 @@ class Run:
         return Result object corresponding to cache simulator run
         '''
         logger.info('START: %s simulation for %s' %
-                     (locality, self.sourcefile.filename))
+                    (locality, self.sourcefile.filename))
         if locality == 'local':
             trace_file = self._get_local_trace_file()
         elif locality == 'global':
@@ -340,7 +340,7 @@ class Run:
                                  stdout=stdout)
             p.wait()
             logger.info('END: %s simulation for %s' %
-                         (locality, self.sourcefile.filename))
+                        (locality, self.sourcefile.filename))
             return stdout.name
 
     def _get_local_trace_file(self):
@@ -352,7 +352,7 @@ class Run:
             return itertools.zip_longest(*args, fillvalue=fillvalue)
 
         logger.info('START: generate local trace for %s' %
-                     self.sourcefile.filename)
+                    self.sourcefile.filename)
         pintrace = self._pintrace
         local_trace = tempfile.NamedTemporaryFile(delete=False).name
         local_virtual_addresses = set()
@@ -380,7 +380,7 @@ class Run:
             out.write(part1)
             out.write(part2)
         logger.info('END: generate local trace for %s' %
-                     self.sourcefile.filename)
+                    self.sourcefile.filename)
         return local_trace
 
 
