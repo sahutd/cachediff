@@ -573,9 +573,9 @@ def process(file1, file2, input1, input2):
     diff1, diff2 = single_contiguous_diff(file1, file2)
     manager = mp.Manager()
     manager.runs = manager.dict()
-    process_run1 = mp.Process(name='1', target=_run_object,
+    process_run1 = mp.Process(name='p1', target=_run_object,
                               args=(file1, input1, diff1, manager))
-    process_run2 = mp.Process(name='2', target=_run_object,
+    process_run2 = mp.Process(name='p2', target=_run_object,
                               args=(file2, input2, diff2, manager))
     process_run1 .start()
     process_run2 .start()
