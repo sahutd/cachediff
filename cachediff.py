@@ -106,7 +106,6 @@ class File:
             self.create_dumpfile()
         self._test_filename_ = _test_filename_
         self.lines = self.init_file()
-        self.cleanup(dumpfile=dumpfile)
         logger.info('END: Creating File() for %s' % filename)
 
     def init_file(self):
@@ -144,7 +143,7 @@ class File:
         obj = subprocess.Popen(['gcc', '-g', self.filename, '-o',
                                 self.executable])
         obj.wait()
-        tmp = tempfile.NamedTemporaryFile(delete=False)
+        tmp = tempfile.NamedTemporaryFile(prefix='cachediff_', delete=False)
         obj = subprocess.Popen(['objdump', '-dl', self.executable], stdout=tmp)
         obj.wait()
         self.dumpfile = tmp.name
@@ -173,10 +172,6 @@ class File:
                 return obj
 
         raise ValueError
-
-    def cleanup(self, dumpfile):
-        if not dumpfile:
-            os.remove(self.dumpfile)
 
 
 class Result:
@@ -293,7 +288,7 @@ class Run:
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
         stdin = open(self.inputfile)
-        trace_file = tempfile.NamedTemporaryFile().name
+        trace_file = tempfile.NamedTemporaryFile(prefix='cachediff_').name
         p = subprocess.Popen([pin_executable, '-injection', 'child', '-t',
                               tracer,
                               '--',
@@ -337,7 +332,8 @@ class Run:
                                  processor.items()])
             dinero = os.path.join(dinero, 'dineroIV')
             command = [dinero + ' ' + argument + ' -informat d']
-            stdout = tempfile.NamedTemporaryFile(delete=False)
+            stdout = tempfile.NamedTemporaryFile(prefix='cachediff_',
+                                                 delete=False)
             p = subprocess.Popen(command, shell=True, stdin=input_file,
                                  stdout=stdout)
             p.wait()
@@ -356,7 +352,8 @@ class Run:
         logger.info('START: generate local trace for %s' %
                     self.sourcefile.filename)
         pintrace = self._pintrace
-        local_trace = tempfile.NamedTemporaryFile(delete=False).name
+        local_trace = tempfile.NamedTemporaryFile(prefix='cachediff_',
+                                                  delete=False).name
         local_virtual_addresses = set()
         for d in self.diff_block:
             for address in d.get_virtual_addresses():
@@ -383,6 +380,7 @@ class Run:
             out.write(part2)
         logger.info('END: generate local trace for %s' %
                     self.sourcefile.filename)
+        self.local_trace = local_trace
         return local_trace
 
 
@@ -567,6 +565,13 @@ def process(file1, file2, input1, input2):
         run = Run(file_, input_, diff)
         manager.runs[file_.filename] = run
 
+    def _clean_up():
+        dir_ = tempfile.tempdir
+        logger.info('START : Cleaning up temp files')
+        for f in os.listdir(dir_):
+            if re.match('cachediff_', f):
+                    os.remove(os.path.join(dir_, f))
+
     logger.info('START: Process %s %s' % (file1, file2))
     file1 = File(file1)
     file2 = File(file2)
@@ -585,6 +590,7 @@ def process(file1, file2, input1, input2):
     run1 = manager.runs[file1.filename]
     run2 = manager.runs[file2.filename]
     result = perform_analysis(run1, run2)
+    _clean_up()
     logger.info('END: Process %s %s' % (file1.filename, file2.filename))
     return result
 

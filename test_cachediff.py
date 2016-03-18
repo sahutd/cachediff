@@ -51,10 +51,6 @@ class TestFile(unittest.TestCase):
         self.f2 = cachediff.File(file_path1, dumpfile1,
                                  test_prefix+'qsort.c')
 
-    def test_clean_up(self):
-        self.assertTrue(os.path.exists(self.f.dumpfile))
-        self.assertFalse(os.path.exists(self.f1.dumpfile))
-
     def test_get_high_level_lines(self):
         temp = self.f.get_high_level_lines()
         self.assertEqual(len(temp), self.f.get_line_count())
