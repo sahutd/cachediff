@@ -316,7 +316,7 @@ class Run:
         logger.info('START: %s simulation for %s' %
                     (locality, self.sourcefile.filename))
         if locality == 'local':
-            trace_file = self._get_local_trace_file()
+            trace_file = self._get_nonlocal_trace_file()
         elif locality == 'global':
             trace_file = self._pintrace
         processor = {'-l1-isize': '64k', '-l1-dsize': '16k',
@@ -343,7 +343,7 @@ class Run:
                         (locality, self.sourcefile.filename))
             return stdout.name
 
-    def _get_local_trace_file(self):
+    def _get_nonlocal_trace_file(self):
 
         def grouper(iterable, n, fillvalue=None):
             "Collect data into fixed-length chunks or blocks"
