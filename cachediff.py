@@ -1,6 +1,5 @@
 import sys
 import os
-import shutil
 import re
 import subprocess
 import collections
@@ -9,6 +8,7 @@ import difflib
 import logging
 import itertools
 import time
+import multiprocessing as mp
 
 
 def getLogger():
@@ -28,7 +28,7 @@ def getLogger():
     logger = logging.getLogger()
     handler = logging.StreamHandler()
     formatter = UnixTimeStampFormatter(
-            "%(asctime)s %(levelname)-5.5s  %(message)s"
+            "%(asctime)s %(processName)s %(levelname)-5.5s  %(message)s"
             )
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -293,15 +293,17 @@ class Run:
         tracer = os.path.join(pin, 'source', 'tools', 'MyPinTool',
                               'obj-intel64', 'MyPinTool.so')
         stdin = open(self.inputfile)
+        trace_file = tempfile.NamedTemporaryFile().name
         p = subprocess.Popen([pin_executable, '-injection', 'child', '-t',
                               tracer,
                               '--',
-                              self.sourcefile.executable],
+                              self.sourcefile.executable,
+                              trace_file
+                              ],
                              stdin=stdin,
-                             stdout=tempfile.NamedTemporaryFile())
+                             stdout=subprocess.DEVNULL,
+                             )
         p.wait()
-        trace_file = tempfile.NamedTemporaryFile().name
-        shutil.move('pinatrace.out', trace_file)
         logger.info('END: Running executable for %s under PIN' %
                     self.sourcefile.filename)
         return trace_file
@@ -458,7 +460,6 @@ def perform_analysis(run1, run2):
         '''
         @return Statistical Analysis for a particular type of cache
         '''
-        logger.info('START: result Analysis')
         result_l1 = run1.local_cache_result.results
         result_l2 = run2.local_cache_result.results
         result_g1 = run1.global_cache_result.results
@@ -543,6 +544,7 @@ def perform_analysis(run1, run2):
 
         return '\n'.join(result_string)
 
+    logger.info('START: result Analysis')
     result_string = '----------LOCAL AND GLOBAL CACHE ANALYSIS----------\n'
     result_string += _get_cache_output(run1, run2, 'l1_dcache_')
     result_string += _get_cache_output(run1, run2, 'l1_icache_')
@@ -561,14 +563,29 @@ def process(file1, file2, input1, input2):
     of file1 and file2
     return - an object of ResultDiff
     '''
+    def _run_object(file_, input_, diff, manager):
+        run = Run(file_, input_, diff)
+        manager.runs[file_.filename] = run
+
     logger.info('START: Process %s %s' % (file1, file2))
     file1 = File(file1)
     file2 = File(file2)
     diff1, diff2 = single_contiguous_diff(file1, file2)
-    run1 = Run(file1, input1, diff1)
-    run2 = Run(file2, input2, diff2)
+    manager = mp.Manager()
+    manager.runs = manager.dict()
+    process_run1 = mp.Process(name='1', target=_run_object,
+                              args=(file1, input1, diff1, manager))
+    process_run2 = mp.Process(name='2', target=_run_object,
+                              args=(file2, input2, diff2, manager))
+    process_run1 .start()
+    process_run2 .start()
+    process_run1.join()
+    process_run2 .join()
+
+    run1 = manager.runs[file1.filename]
+    run2 = manager.runs[file2.filename]
     result = perform_analysis(run1, run2)
-    logger.info('END: Process %s %s' % (file1, file2))
+    logger.info('END: Process %s %s' % (file1.filename, file2.filename))
     return result
 
 
